@@ -34,17 +34,17 @@ export default function PostJobPage() {
   const steps = ['Basic Info', 'Requirements', 'Review & Post'];
 
   return (
-    <div className="p-6 sm:p-8 max-w-7xl">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Job Management</p>
-          <h1 className="text-2xl font-extrabold text-slate-900">Post a New Job</h1>
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Post a New Job</h1>
         </div>
       </div>
 
       {/* Stepper */}
-      <div className="flex items-center gap-3 mb-8">
+      <div className="flex flex-wrap items-center gap-3 mb-8">
         {steps.map((label, i) => (
           <div key={label} className="flex items-center gap-2">
             <div className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold transition-colors ${i + 1 === step ? 'bg-blue-600 text-white' : i + 1 < step ? 'bg-green-500 text-white' : 'bg-slate-100 text-slate-400'}`}>
@@ -63,17 +63,17 @@ export default function PostJobPage() {
 
           {/* Step 1: Basic Info */}
           {step === 1 && (
-            <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <h2 className="font-bold text-slate-900 mb-5">Basic Job Information</h2>
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <h2 className="font-bold text-slate-900 tracking-tight mb-5">Basic Job Information</h2>
               <div className="space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="jobTitle" className="block text-sm font-semibold text-slate-700 mb-1.5">Job Title</label>
-                    <input id="jobTitle" value={jobTitle} onChange={e => setJobTitle(e.target.value)} className="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" />
+                    <input id="jobTitle" value={jobTitle} onChange={e => setJobTitle(e.target.value)} className="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all" />
                   </div>
                   <div>
                     <label htmlFor="dept" className="block text-sm font-semibold text-slate-700 mb-1.5">Department</label>
-                    <select id="dept" value={dept} onChange={e => setDept(e.target.value)} className="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                    <select id="dept" value={dept} onChange={e => setDept(e.target.value)} className="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all">
                       {['Design', 'Engineering', 'Marketing', 'Data', 'Human Resources', 'Product'].map(d => <option key={d}>{d}</option>)}
                     </select>
                   </div>
@@ -81,7 +81,7 @@ export default function PostJobPage() {
 
                 <div>
                   <label htmlFor="description" className="block text-sm font-semibold text-slate-700 mb-1.5">Job Description</label>
-                  <textarea id="description" value={description} onChange={e => setDescription(e.target.value)} rows={4} className="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none" />
+                  <textarea id="description" value={description} onChange={e => setDescription(e.target.value)} rows={4} className="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all resize-none" />
                 </div>
 
                 <div>
@@ -107,7 +107,7 @@ export default function PostJobPage() {
                         onChange={e => setNewSkill(e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && addSkill(newSkill)}
                         placeholder="Add skills..."
-                        className="w-full px-4 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                       />
                     </div>
                     <button onClick={() => addSkill(newSkill)} className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-2 rounded-xl transition-colors">
@@ -119,13 +119,13 @@ export default function PostJobPage() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="expLevel" className="block text-sm font-semibold text-slate-700 mb-1.5">Experience Level</label>
-                    <select id="expLevel" value={expLevel} onChange={e => setExpLevel(e.target.value)} className="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select id="expLevel" value={expLevel} onChange={e => setExpLevel(e.target.value)} className="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600">
                       {['Entry Level (0-2 years)', 'Mid Level (2-5 years)', 'Mid-Senior Level (5+ years)', 'Senior (8+ years)', 'Director/Executive'].map(e => <option key={e}>{e}</option>)}
                     </select>
                   </div>
                   <div>
                     <label htmlFor="education" className="block text-sm font-semibold text-slate-700 mb-1.5">Education Requirement</label>
-                    <select id="education" value={education} onChange={e => setEducation(e.target.value)} className="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select id="education" value={education} onChange={e => setEducation(e.target.value)} className="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600">
                       {["High School", "Associate's Degree", "Bachelor's Degree", "Master's Degree", "PhD", "Any"].map(e => <option key={e}>{e}</option>)}
                     </select>
                   </div>
@@ -140,7 +140,7 @@ export default function PostJobPage() {
                       id="location"
                       value={location}
                       onChange={e => setLocation(e.target.value)}
-                      className="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                     />
                   </div>
                   <div>
@@ -152,7 +152,7 @@ export default function PostJobPage() {
                         id="salaryMin"
                         value={`$${salaryMin}`}
                         onChange={e => setSalaryMin(e.target.value.replace('$', ''))}
-                        className="flex-1 min-w-0 px-3 py-2.5 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="flex-1 min-w-0 px-3 py-2.5 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                       />
                       <span className="text-slate-400 text-sm">–</span>
                       <input
@@ -160,7 +160,7 @@ export default function PostJobPage() {
                         aria-label="Maximum salary"
                         value={`$${salaryMax}`}
                         onChange={e => setSalaryMax(e.target.value.replace('$', ''))}
-                        className="flex-1 min-w-0 px-3 py-2.5 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="flex-1 min-w-0 px-3 py-2.5 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                       />
                     </div>
                   </div>
@@ -171,8 +171,8 @@ export default function PostJobPage() {
 
           {/* Step 2: Requirements */}
           {step === 2 && (
-            <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <h2 className="font-bold text-slate-900 mb-5">Job Requirements & Details</h2>
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <h2 className="font-bold text-slate-900 tracking-tight mb-5">Job Requirements & Details</h2>
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1.5">Key Responsibilities</label>
@@ -182,7 +182,7 @@ export default function PostJobPage() {
                     onChange={e => setResponsibilities(e.target.value)}
                     rows={6}
                     placeholder="Enter key responsibilities..."
-                    className="w-full px-4 py-3 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none"
+                    className="w-full px-4 py-3 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all resize-none"
                   />
                 </div>
 
@@ -193,7 +193,7 @@ export default function PostJobPage() {
                     onChange={e => setQualifications(e.target.value)}
                     rows={6}
                     placeholder="Enter required qualifications..."
-                    className="w-full px-4 py-3 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none"
+                    className="w-full px-4 py-3 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all resize-none"
                   />
                 </div>
 
@@ -217,11 +217,11 @@ export default function PostJobPage() {
 
           {/* Step 3: Review & Post */}
           {step === 3 && (
-            <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <h2 className="font-bold text-slate-900 mb-5">Review & Publish</h2>
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <h2 className="font-bold text-slate-900 tracking-tight mb-5">Review & Publish</h2>
 
               <div className="space-y-6">
-                <div className="grid sm:grid-cols-2 gap-6 bg-slate-50 rounded-2xl p-5 border border-slate-100">
+                <div className="grid sm:grid-cols-2 gap-6 bg-slate-50 rounded-2xl p-5 border border-slate-200">
                   <div>
                     <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Job Details</h3>
                     <div className="space-y-2">
@@ -261,9 +261,9 @@ export default function PostJobPage() {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-slate-100">
+                <div className="pt-4 border-t border-slate-200">
                   <label className="flex items-center gap-3 cursor-pointer group">
-                    <input type="checkbox" className="w-5 h-5 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" />
+                    <input type="checkbox" className="w-5 h-5 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-600 cursor-pointer" />
                     <span className="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">I have reviewed the job details and confirm they are accurate.</span>
                   </label>
                 </div>
@@ -272,16 +272,16 @@ export default function PostJobPage() {
           )}
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
             <button
               onClick={() => setStep(Math.max(1, step - 1))}
               disabled={step === 1}
-              className="px-5 py-2.5 text-sm font-semibold border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="w-full sm:w-auto px-5 py-2.5 text-sm font-semibold border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               ← Back
             </button>
-            <div className="flex gap-3">
-              <button className="px-5 py-2.5 text-sm font-semibold border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors">Save Draft</button>
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+              <button className="w-full sm:w-auto px-5 py-2.5 text-sm font-semibold border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors">Save Draft</button>
               <button
                 onClick={() => {
                   if (step < steps.length) {
@@ -291,7 +291,7 @@ export default function PostJobPage() {
                     alert('Job Published Successfully!');
                   }
                 }}
-                className={`px-5 py-2.5 text-sm font-semibold rounded-xl transition-all shadow-sm ${step === steps.length ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+                className={`w-full sm:w-auto px-5 py-2.5 text-sm font-semibold rounded-xl transition-all shadow-sm ${step === steps.length ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
               >
                 {step === 1 ? 'Continue to Requirements →' : step === 2 ? 'Review & Post →' : 'Publish Job Now'}
               </button>
@@ -301,7 +301,7 @@ export default function PostJobPage() {
 
         {/* Live Preview Sidebar */}
         <div className="space-y-4">
-          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-xl shadow-slate-200/50 sticky top-6 overflow-hidden">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xl shadow-slate-200/50 sticky top-6 overflow-hidden">
             {/* Header with Animation */}
             <div className="bg-slate-900 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -325,13 +325,13 @@ export default function PostJobPage() {
 
               {/* Quick Info Tags */}
               <div className="flex flex-wrap gap-2 mb-6">
-                <span className="flex items-center gap-1.5 bg-slate-50 border border-slate-100 text-slate-600 text-[11px] font-bold px-3 py-1.5 rounded-xl">
+                <span className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 text-slate-600 text-[11px] font-bold px-3 py-1.5 rounded-xl">
                   <MapPin size={12} className="text-blue-500" /> {location || 'Remote'}
                 </span>
-                <span className="flex items-center gap-1.5 bg-slate-50 border border-slate-100 text-slate-600 text-[11px] font-bold px-3 py-1.5 rounded-xl">
+                <span className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 text-slate-600 text-[11px] font-bold px-3 py-1.5 rounded-xl">
                   <DollarSign size={12} className="text-green-500" /> ${salaryMin} – ${salaryMax}
                 </span>
-                <span className="flex items-center gap-1.5 bg-slate-50 border border-slate-100 text-slate-600 text-[11px] font-bold px-3 py-1.5 rounded-xl">
+                <span className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 text-slate-600 text-[11px] font-bold px-3 py-1.5 rounded-xl">
                   <Eye size={12} className="text-indigo-500" /> {expLevel.split(' ')[0]}
                 </span>
               </div>

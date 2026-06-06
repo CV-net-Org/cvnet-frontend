@@ -47,34 +47,34 @@ const calendarDays = [
 ];
 
 const typeIconMap: Record<string, ReactElement> = {
-  video: <Video size={14} className="text-blue-500" />,
+  video: <Video size={14} className="text-blue-600" />,
   office: <MapPin size={14} className="text-emerald-500" />,
   phone: <Phone size={14} className="text-amber-500" />,
 };
 
 export default function InterviewsPage() {
   return (
-    <div className="p-6 sm:p-8 max-w-7xl">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Interview Schedule</p>
-          <h1 className="text-2xl font-extrabold text-slate-900">Interviews</h1>
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Interviews</h1>
           <p className="text-sm text-slate-500 mt-0.5">October 2023 · GMT+1</p>
         </div>
-        <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors">
+        <button className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-all active:scale-95 w-full sm:w-auto">
           <Plus size={15} /> Schedule New
         </button>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Calendar View */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
           {/* Mini Calendar */}
-          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
             <div className="flex items-center justify-between mb-5">
               <button className="p-1.5 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"><ChevronLeft size={16} className="text-slate-600" /></button>
-              <h2 className="font-bold text-slate-900">October 2023</h2>
+              <h2 className="font-bold text-slate-900 tracking-tight">October 2023</h2>
               <button className="p-1.5 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"><ChevronRight size={16} className="text-slate-600" /></button>
             </div>
             <div className="flex gap-2">
@@ -101,25 +101,25 @@ export default function InterviewsPage() {
           </div>
 
           {/* Today's Schedule */}
-          <div className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
               <div>
-                <h2 className="font-bold text-slate-900">Today&apos;s Schedule</h2>
+                <h2 className="font-bold text-slate-900 tracking-tight">Today&apos;s Schedule</h2>
                 <p className="text-xs text-slate-400 mt-0.5">{todaySchedule.length} Meetings</p>
               </div>
             </div>
 
-            <div className="divide-y divide-slate-50">
+            <div className="divide-y divide-slate-100">
               {todaySchedule.map(({ time, duration, candidate, role, platform, typeIcon, done }) => (
                 <div key={time + candidate} className={`flex items-start gap-4 px-6 py-5 ${done ? 'opacity-60' : ''}`}>
                   {/* Time Column */}
                   <div className="flex-shrink-0 w-16 text-right">
-                    <p className="text-xs font-bold text-slate-900">{time}</p>
+                    <p className="text-xs font-bold text-slate-900 tracking-tight">{time}</p>
                   </div>
 
                   {/* Timeline dot */}
                   <div className="flex flex-col items-center flex-shrink-0">
-                    <div className={`w-3 h-3 rounded-full border-2 mt-0.5 ${done ? 'bg-green-500 border-green-500' : 'bg-blue-500 border-blue-500'}`} />
+                    <div className={`w-3 h-3 rounded-full border-2 mt-0.5 ${done ? 'bg-green-500 border-green-500' : 'bg-blue-600 border-blue-600'}`} />
                     <div className="flex-1 w-0.5 bg-slate-100 mt-1 h-6" />
                   </div>
 
@@ -132,7 +132,7 @@ export default function InterviewsPage() {
                           <span className="text-xs text-slate-400 font-medium">{platform}</span>
                           <span className="flex items-center gap-1 text-xs text-slate-400"><Clock size={11} /> {duration}</span>
                         </div>
-                        <p className="font-bold text-slate-900 text-sm">{candidate}</p>
+                        <p className="font-bold text-slate-900 tracking-tight text-sm">{candidate}</p>
                         <p className="text-xs text-slate-400">{role}</p>
                       </div>
                       <div className="flex gap-2 flex-shrink-0">
@@ -151,25 +151,25 @@ export default function InterviewsPage() {
         </div>
 
         {/* Upcoming Requests */}
-        <div className="space-y-5">
-          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
+        <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-slate-900">Upcoming Requests</h3>
+              <h3 className="font-bold text-slate-900 tracking-tight">Upcoming Requests</h3>
               <button className="text-xs font-semibold text-blue-600 hover:text-blue-700">View All</button>
             </div>
             <div className="space-y-3">
               {upcomingRequests.map(({ role, pending }) => (
-                <div key={role} className="bg-blue-50 border border-blue-100 rounded-xl p-4">
-                  <p className="text-sm font-bold text-slate-900">{role}</p>
+                <div key={role} className="bg-blue-50 border border-blue-100 rounded-xl p-4 transition-all hover:-translate-y-1 hover:shadow-md">
+                  <p className="text-sm font-bold text-slate-900 tracking-tight">{role}</p>
                   <p className="text-xs text-slate-400 mt-0.5">{pending}</p>
-                  <button className="mt-3 w-full text-xs font-semibold text-blue-600 border border-blue-200 py-1.5 rounded-lg hover:bg-blue-100 transition-colors">Schedule Now</button>
+                  <button className="mt-3 w-full text-xs font-semibold text-blue-600 border border-blue-200 py-1.5 rounded-lg hover:bg-blue-100 transition-colors active:scale-[0.98]">Schedule Now</button>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
-            <h3 className="font-bold text-slate-900 text-sm mb-3">Quick Stats</h3>
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <h3 className="font-bold text-slate-900 tracking-tight text-sm mb-3">Quick Stats</h3>
             <div className="space-y-3">
               {[
                 { label: 'Scheduled This Week', value: '8' },
@@ -178,7 +178,7 @@ export default function InterviewsPage() {
               ].map(({ label, value }) => (
                 <div key={label} className="flex items-center justify-between">
                   <span className="text-xs text-slate-500">{label}</span>
-                  <span className="text-sm font-bold text-slate-900">{value}</span>
+                  <span className="text-sm font-bold text-slate-900 tracking-tight">{value}</span>
                 </div>
               ))}
             </div>
