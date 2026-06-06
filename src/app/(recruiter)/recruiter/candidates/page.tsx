@@ -68,14 +68,14 @@ export default function CandidatesPage() {
     setSelectedSkills(s => s.includes(skill) ? s.filter(x => x !== skill) : [...s, skill]);
 
   return (
-    <div className="p-6 sm:p-8 max-w-7xl">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Candidates Directory</p>
-          <h1 className="text-2xl font-extrabold text-slate-900">Candidates</h1>
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Candidates</h1>
         </div>
-        <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors">
+        <button className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors w-full sm:w-auto">
           <Plus size={15} /> Add Candidate
         </button>
       </div>
@@ -83,7 +83,7 @@ export default function CandidatesPage() {
       <div className="flex gap-6">
         {/* Filters Sidebar */}
         <div className="hidden lg:block w-56 flex-shrink-0 space-y-5">
-          <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
+          <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-bold text-slate-800">Filters</h3>
               <button className="text-xs text-blue-600 font-semibold hover:text-blue-700">Clear all</button>
@@ -95,7 +95,7 @@ export default function CandidatesPage() {
                 {matchRanges.map(({ label, count }) => (
                   <label key={label} className="flex items-center justify-between py-1 cursor-pointer">
                     <div className="flex items-center gap-2">
-                      <input type="checkbox" className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                      <input type="checkbox" className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-600" />
                       <span className="text-xs text-slate-600">{label}</span>
                     </div>
                     <span className="text-xs text-slate-400">{count}</span>
@@ -104,11 +104,11 @@ export default function CandidatesPage() {
               </div>
             </div>
 
-            <div className="mb-4 pt-4 border-t border-slate-100">
+            <div className="mb-4 pt-4 border-t border-slate-200">
               <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Skills</h4>
               <div className="relative mb-2">
                 <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input placeholder="Find skill..." className="w-full pl-7 pr-2 py-1.5 text-xs border border-slate-200 rounded-lg bg-slate-50 focus:outline-none focus:ring-1 focus:ring-blue-500" />
+                <input placeholder="Find skill..." className="w-full pl-7 pr-2 py-1.5 text-xs border border-slate-200 rounded-lg bg-slate-50 focus:outline-none focus:ring-1 focus:ring-blue-600" />
               </div>
               <div className="flex flex-wrap gap-1">
                 {filterSkills.map(skill => (
@@ -117,22 +117,22 @@ export default function CandidatesPage() {
               </div>
             </div>
 
-            <div className="mb-4 pt-4 border-t border-slate-100">
+            <div className="mb-4 pt-4 border-t border-slate-200">
               <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Location</h4>
               {filterLocations.map(loc => (
                 <label key={loc} className="flex items-center gap-2 py-0.5 cursor-pointer">
-                  <input type="checkbox" className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                  <input type="checkbox" className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-600" />
                   <span className="text-xs text-slate-600">{loc}</span>
                 </label>
               ))}
             </div>
 
-            <div className="pt-4 border-t border-slate-100">
+            <div className="pt-4 border-t border-slate-200">
               <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Experience</h4>
               <div className="flex gap-2">
-                <input placeholder="Min" className="w-full px-2 py-1.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500" />
+                <input placeholder="Min" className="w-full px-2 py-1.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-600" />
                 <span className="text-xs text-slate-400 self-center">–</span>
-                <input placeholder="Max" className="w-full px-2 py-1.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500" />
+                <input placeholder="Max" className="w-full px-2 py-1.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-600" />
               </div>
             </div>
           </div>
@@ -141,20 +141,20 @@ export default function CandidatesPage() {
         {/* Candidates List */}
         <div className="flex-1">
           {/* Search + Sort */}
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-6">
             <div className="relative flex-1 max-w-xs">
               <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder="Search by name, email..."
-                className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
             <div className="relative">
               <select 
                 aria-label="Sort candidates"
-                className="appearance-none pl-3 pr-8 py-2 text-sm border border-slate-200 rounded-xl bg-white text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                className="appearance-none pl-3 pr-8 py-2 text-sm border border-slate-200 rounded-xl bg-white text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer"
               >
                 <option>Match Score</option>
                 <option>Experience</option>
@@ -174,14 +174,14 @@ export default function CandidatesPage() {
 
           <div className="space-y-3">
             {filtered.map(({ initials, name, email, skills, experience, match, status, bg, text }) => (
-              <div key={email} className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
+              <div key={email} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between flex-wrap gap-3">
                   <div className="flex items-center gap-4">
                     <div className={`w-12 h-12 rounded-full ${bg} ${text} flex items-center justify-center text-sm font-bold flex-shrink-0`}>
                       {initials}
                     </div>
                     <div>
-                      <p className="font-bold text-slate-900">{name}</p>
+                      <p className="font-bold text-slate-900 tracking-tight">{name}</p>
                       <p className="text-xs text-slate-400">{email}</p>
                       <div className="flex flex-wrap gap-1 mt-2">
                         {skills.map(s => (
@@ -193,7 +193,7 @@ export default function CandidatesPage() {
                   <div className="flex items-center gap-6 flex-wrap">
                     <div className="text-center">
                       <p className="text-xs text-slate-400">Experience</p>
-                      <p className="text-sm font-bold text-slate-900">{experience}</p>
+                      <p className="text-sm font-bold text-slate-900 tracking-tight">{experience}</p>
                     </div>
                     <div className="text-center">
                       <p className="text-xs text-slate-400">Match Score</p>
@@ -215,7 +215,7 @@ export default function CandidatesPage() {
           </div>
 
           {/* Pagination */}
-          <div className="flex items-center justify-between mt-5">
+          <div className="flex items-center justify-between mt-8">
             <p className="text-xs text-slate-400">Showing {filtered.length} of 237</p>
             <div className="flex gap-1">
               <button className="px-3 py-1.5 text-xs border border-slate-200 rounded-lg text-slate-500 hover:bg-slate-50">Previous</button>

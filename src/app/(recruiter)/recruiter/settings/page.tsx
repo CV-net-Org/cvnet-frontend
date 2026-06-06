@@ -34,10 +34,10 @@ export default function RecruiterSettingsPage() {
   ];
 
   return (
-    <div className="p-6 sm:p-10 max-w-6xl mx-auto min-h-screen">
+    <div className="p-4 sm:p-6 lg:p-10 max-w-6xl mx-auto min-h-screen">
       {/* Header */}
       <div className="mb-10">
-        <h1 className="text-3xl font-black text-slate-900 tracking-tight">Settings</h1>
+        <h1 className="text-3xl font-black text-slate-900 tracking-tight tracking-tight">Settings</h1>
         <p className="text-slate-500 font-medium">Manage your personal account and company preferences</p>
       </div>
 
@@ -65,7 +65,7 @@ export default function RecruiterSettingsPage() {
         {/* Content Area */}
         <div className="lg:col-span-3 space-y-6">
           
-          <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-xl shadow-slate-200/40">
+          <div className="bg-white border border-slate-200 rounded-[2.5rem] p-8 shadow-xl shadow-slate-200/40">
             
             {/* Profile Section */}
             {activeSection === 'profile' && (
@@ -80,7 +80,7 @@ export default function RecruiterSettingsPage() {
                     </div>
                   </div>
                   <div>
-                    <h3 className="font-bold text-slate-900 text-lg">Your Photo</h3>
+                    <h3 className="font-bold text-slate-900 tracking-tight text-lg">Your Photo</h3>
                     <p className="text-xs text-slate-500 mb-3">Upload a professional headshot for your recruiter profile</p>
                     <div className="flex gap-2">
                       <button className="text-xs font-bold text-blue-600 hover:underline">Upload new</button>
@@ -92,17 +92,17 @@ export default function RecruiterSettingsPage() {
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label htmlFor="full-name" className="text-xs font-black text-slate-400 uppercase tracking-widest">Full Name</label>
-                    <input id="full-name" defaultValue="Gaviru Bihan" className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium text-slate-800" />
+                    <input id="full-name" defaultValue="Gaviru Bihan" className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none transition-all font-medium text-slate-800" />
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="job-title" className="text-xs font-black text-slate-400 uppercase tracking-widest">Job Title</label>
-                    <input id="job-title" defaultValue="Senior Talent Acquisition" className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium text-slate-800" />
+                    <input id="job-title" defaultValue="Senior Talent Acquisition" className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none transition-all font-medium text-slate-800" />
                   </div>
                   <div className="space-y-2 lg:col-span-2">
                     <label htmlFor="email" className="text-xs font-black text-slate-400 uppercase tracking-widest">Email Address</label>
                     <div className="relative">
                       <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                      <input id="email" defaultValue="gaviru@cvnet.ai" className="w-full pl-12 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium text-slate-800" />
+                      <input id="email" defaultValue="gaviru@cvnet.ai" className="w-full pl-12 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none transition-all font-medium text-slate-800" />
                     </div>
                   </div>
                 </div>
@@ -115,18 +115,18 @@ export default function RecruiterSettingsPage() {
                 <div className="space-y-6">
                   <div className="space-y-2">
                     <label htmlFor="company-name" className="text-xs font-black text-slate-400 uppercase tracking-widest">Company Name</label>
-                    <input id="company-name" defaultValue="CvNet Corp" className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium text-slate-800" />
+                    <input id="company-name" defaultValue="CvNet Corp" className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none transition-all font-medium text-slate-800" />
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="website" className="text-xs font-black text-slate-400 uppercase tracking-widest">Website URL</label>
                     <div className="relative">
                       <Globe size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                      <input id="website" defaultValue="https://cvnet-frontend.vercel.app" className="w-full pl-12 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium text-slate-800" />
+                      <input id="website" defaultValue="https://cvnet-frontend.vercel.app" className="w-full pl-12 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none transition-all font-medium text-slate-800" />
                     </div>
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="company-desc" className="text-xs font-black text-slate-400 uppercase tracking-widest">Company Description</label>
-                    <textarea id="company-desc" rows={4} defaultValue="CvNet is a modern, AI-powered recruitment and career development platform..." className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium text-slate-800 resize-none" />
+                    <textarea id="company-desc" rows={4} defaultValue="CvNet is a modern, AI-powered recruitment and career development platform..." className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none transition-all font-medium text-slate-800 resize-none" />
                   </div>
                 </div>
               </div>
@@ -170,12 +170,12 @@ export default function RecruiterSettingsPage() {
             )}
 
             {/* Bottom Actions */}
-            <div className="mt-10 pt-8 border-t border-slate-50 flex items-center justify-between">
+            <div className="mt-10 pt-8 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4">
               <p className="text-xs text-slate-400 font-medium italic">Last updated today at 10:45 AM</p>
               <button 
                 onClick={handleSave}
                 disabled={isSaving}
-                className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-8 py-3.5 rounded-2xl font-bold shadow-xl shadow-slate-200 transition-all active:scale-95 disabled:opacity-70"
+                className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-8 py-3.5 rounded-2xl font-bold shadow-xl shadow-slate-200 transition-all active:scale-95 disabled:opacity-70 w-full sm:w-auto"
               >
                 {isSaving ? (
                   <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />

@@ -49,15 +49,15 @@ const aiRecommendations = [
 
 export default function AnalyticsPage() {
   return (
-    <div className="p-6 sm:p-8 max-w-7xl">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Advanced Analytics</p>
-          <h1 className="text-2xl font-extrabold text-slate-900">Analytics</h1>
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Analytics</h1>
           <p className="text-slate-500 text-sm mt-0.5">Oct 1, 2023 – Oct 31, 2023</p>
         </div>
-        <button className="flex items-center gap-2 border border-slate-200 text-slate-600 text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-slate-50 transition-colors">
+        <button className="flex items-center justify-center gap-2 border border-slate-200 text-slate-600 text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-slate-50 transition-colors w-full sm:w-auto">
           <Download size={15} /> Export Report
         </button>
       </div>
@@ -65,9 +65,9 @@ export default function AnalyticsPage() {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {kpis.map(({ label, value, sub, change, up }) => (
-          <div key={label} className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
+          <div key={label} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
             <p className="text-xs font-medium text-slate-500 mb-1">{label}</p>
-            <p className="text-2xl font-extrabold text-slate-900">{value}</p>
+            <p className="text-2xl font-extrabold text-slate-900 tracking-tight">{value}</p>
             {sub && <p className="text-xs text-slate-400">{sub}</p>}
             <div className={`flex items-center gap-1 mt-1 text-xs font-semibold ${up ? 'text-green-600' : 'text-red-500'}`}>
               {up ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
@@ -79,13 +79,13 @@ export default function AnalyticsPage() {
 
       <div className="grid lg:grid-cols-2 gap-6 mb-6">
         {/* Hiring Pipeline Velocity */}
-        <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
-          <h2 className="font-bold text-slate-900 mb-1">Hiring Pipeline Velocity</h2>
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+          <h2 className="font-bold text-slate-900 tracking-tight mb-1">Hiring Pipeline Velocity</h2>
           <p className="text-xs text-slate-400 mb-5">Candidate movement across stages by week</p>
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+            <table className="w-full text-xs min-w-[600px]">
               <thead>
-                <tr className="border-b border-slate-100">
+                <tr className="border-b border-slate-200">
                   <th className="text-left py-2 text-slate-400 font-semibold"></th>
                   {weeklyPipeline.map(({ week }) => (
                     <th key={week} className="text-center py-2 text-slate-400 font-semibold">{week}</th>
@@ -94,7 +94,7 @@ export default function AnalyticsPage() {
               </thead>
               <tbody>
                 {[
-                  { label: 'Screening', key: 'screening', color: 'bg-blue-500' },
+                  { label: 'Screening', key: 'screening', color: 'bg-blue-600' },
                   { label: 'Interview', key: 'interview', color: 'bg-indigo-500' },
                   { label: 'Offer', key: 'offer', color: 'bg-violet-500' },
                   { label: 'Hired', key: 'hired', color: 'bg-green-500' },
@@ -117,8 +117,8 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Candidate Quality Trends */}
-        <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
-          <h2 className="font-bold text-slate-900 mb-1">Candidate Quality Trends</h2>
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+          <h2 className="font-bold text-slate-900 tracking-tight mb-1">Candidate Quality Trends</h2>
           <p className="text-xs text-slate-400 mb-5">Average assessment scores over time</p>
           <div className="space-y-5">
             {[
@@ -134,7 +134,7 @@ export default function AnalyticsPage() {
                     </div>
                     <div className="flex items-end gap-1 h-10">
                       {techScore.map((v, i) => (
-                        <div key={i} className="flex-1 bg-blue-500 rounded-t opacity-80" style={{ height: `${v}%` }} />
+                        <div key={i} className="flex-1 bg-blue-600 rounded-t opacity-80" style={{ height: `${v}%` }} />
                       ))}
                     </div>
                     <div className="flex justify-between text-xs text-slate-400 mt-1">
@@ -160,25 +160,25 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Skill Demand Heatmap */}
-      <div className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden mb-6">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-6">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
           <div>
-            <h2 className="font-bold text-slate-900">Skill Demand vs. Supply</h2>
+            <h2 className="font-bold text-slate-900 tracking-tight">Skill Demand vs. Supply</h2>
             <p className="text-xs text-slate-400 mt-0.5">Market availability heatmap by skill category</p>
           </div>
           <button className="text-xs font-semibold text-blue-600 hover:text-blue-700">View Full Report →</button>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm min-w-[600px]">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-100">
+              <tr className="bg-slate-50 border-b border-slate-200">
                 <th className="text-left px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Skill Category</th>
                 <th className="text-center px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">High Demand</th>
                 <th className="text-center px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Med Demand</th>
                 <th className="text-center px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Low Demand</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-slate-100">
               {heatmapData.map(({ category, high, med, low }) => (
                 <tr key={category} className="hover:bg-slate-50">
                   <td className="px-6 py-3 font-semibold text-slate-900 text-sm">{category}</td>
@@ -198,13 +198,13 @@ export default function AnalyticsPage() {
       <div>
         <div className="flex items-center gap-2 mb-4">
           <Zap size={16} className="text-yellow-500" />
-          <h2 className="font-bold text-slate-900">AI Recommendations</h2>
+          <h2 className="font-bold text-slate-900 tracking-tight">AI Recommendations</h2>
           <span className="text-xs text-slate-400">Actionable insights based on data</span>
         </div>
         <div className="grid sm:grid-cols-2 gap-4">
           {aiRecommendations.map(({ title, description, action, color }) => (
             <div key={title} className={`border-l-4 rounded-r-xl p-5 ${color}`}>
-              <p className="font-bold text-slate-900 text-sm mb-1">{title}</p>
+              <p className="font-bold text-slate-900 tracking-tight text-sm mb-1">{title}</p>
               <p className="text-xs text-slate-600 leading-relaxed mb-3">{description}</p>
               <button className="text-xs font-semibold text-blue-600 hover:text-blue-700">{action} →</button>
             </div>

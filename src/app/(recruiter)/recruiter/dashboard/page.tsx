@@ -14,7 +14,7 @@ const topCandidates = [
 ];
 
 const skillDistribution = [
-  { skill: 'Python (Backend)', pct: 40, color: 'bg-blue-500' },
+  { skill: 'Python (Backend)', pct: 40, color: 'bg-blue-600' },
   { skill: 'React (Frontend)', pct: 30, color: 'bg-indigo-500' },
   { skill: 'UI/UX Design', pct: 20, color: 'bg-violet-500' },
 ];
@@ -32,17 +32,17 @@ export default function RecruiterDashboardPage() {
   const maxBar = Math.max(...monthlyData);
 
   return (
-    <div className="p-6 sm:p-8 max-w-7xl">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Recruitment Overview</p>
-          <h1 className="text-2xl font-extrabold text-slate-900">Dashboard</h1>
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Dashboard</h1>
         </div>
-        <div className="flex gap-3">
-          <div className="relative hidden sm:block">
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <div className="relative w-full sm:w-auto">
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input placeholder="Search candidates..." className="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 w-48" />
+            <input placeholder="Search candidates..." className="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 w-full sm:w-48" />
           </div>
           <Link href="/recruiter/post-job" className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors">
             <Plus size={16} /> Post Job
@@ -53,7 +53,7 @@ export default function RecruiterDashboardPage() {
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         {statsData.map(({ label, value, change, up }) => (
-          <div key={label} className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
+          <div key={label} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
             <p className="text-sm font-medium text-slate-500 mb-2">{label}</p>
             <p className="text-3xl font-extrabold text-slate-900">{value}</p>
             <div className={`flex items-center gap-1 mt-1 text-xs font-semibold ${up ? 'text-green-600' : 'text-red-500'}`}>
@@ -66,10 +66,10 @@ export default function RecruiterDashboardPage() {
 
       <div className="grid lg:grid-cols-3 gap-6 mb-6">
         {/* Application Trends Chart */}
-        <div className="lg:col-span-2 bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
+        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="font-bold text-slate-900">Application Trends</h2>
+              <h2 className="font-bold text-slate-900 tracking-tight">Application Trends</h2>
               <p className="text-xs text-slate-400 mt-0.5">Monthly applicant volume over time</p>
             </div>
             <span className="text-xs text-slate-400 border border-slate-200 px-2.5 py-1 rounded-lg">Last 6 Months</span>
@@ -78,7 +78,7 @@ export default function RecruiterDashboardPage() {
             {monthlyData.map((val, i) => (
               <div key={months[i]} className="flex-1 flex flex-col items-center gap-1">
                 <div
-                  className="w-full bg-blue-500 rounded-t-lg opacity-80 hover:opacity-100 transition-opacity cursor-default"
+                  className="w-full bg-blue-600 rounded-t-lg opacity-80 hover:opacity-100 transition-opacity cursor-default"
                   style={{ height: `${(val / maxBar) * 100}%` }}
                   title={`${months[i]}: ${val}`}
                 />
@@ -89,8 +89,8 @@ export default function RecruiterDashboardPage() {
         </div>
 
         {/* Skill Distribution */}
-        <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
-          <h2 className="font-bold text-slate-900 mb-1">Skill Distribution</h2>
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+          <h2 className="font-bold text-slate-900 tracking-tight mb-1">Skill Distribution</h2>
           <p className="text-xs text-slate-400 mb-5">Skills required vs. candidates</p>
           <div className="space-y-4">
             {skillDistribution.map(({ skill, pct, color }) => (
@@ -108,29 +108,30 @@ export default function RecruiterDashboardPage() {
           <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
             <div>
               <p className="text-xs text-slate-400">Top Skill Demand</p>
-              <p className="font-bold text-slate-900 text-sm">Python</p>
+              <p className="font-bold text-slate-900 tracking-tight text-sm">Python</p>
               <span className="text-xs text-green-600 font-semibold">+15% High demand</span>
             </div>
             <div className="text-right">
               <p className="text-xs text-slate-400">Total Skills</p>
-              <p className="font-bold text-slate-900 text-xl">4,302</p>
+              <p className="font-bold text-slate-900 tracking-tight text-xl">4,302</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Top Candidates */}
-      <div className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
           <div>
-            <h2 className="font-bold text-slate-900">Top Ranked Candidates</h2>
+            <h2 className="font-bold text-slate-900 tracking-tight">Top Ranked Candidates</h2>
             <p className="text-xs text-slate-400 mt-0.5">Based on AI match score and assessment</p>
           </div>
           <Link href="/recruiter/candidates" className="text-xs font-semibold text-blue-600 hover:text-blue-700">View All →</Link>
         </div>
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[700px]">
           <thead>
-            <tr className="bg-slate-50 border-b border-slate-100">
+            <tr className="bg-slate-50 border-b border-slate-200">
               <th className="text-left px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Candidate</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Role Applied</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Match Score</th>
@@ -138,7 +139,7 @@ export default function RecruiterDashboardPage() {
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Action</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-50">
+          <tbody className="divide-y divide-slate-100">
             {topCandidates.map(({ name, email, role, match, stage }) => (
               <tr key={email} className="hover:bg-slate-50 transition-colors">
                 <td className="px-6 py-4">
@@ -171,6 +172,7 @@ export default function RecruiterDashboardPage() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

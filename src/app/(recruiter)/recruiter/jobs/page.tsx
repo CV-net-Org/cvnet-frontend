@@ -86,27 +86,27 @@ export default function JobsPage() {
   });
 
   return (
-    <div className="p-6 sm:p-8 max-w-7xl">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Job Management</p>
-          <h1 className="text-2xl font-extrabold text-slate-900">Jobs</h1>
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Jobs</h1>
         </div>
-        <Link href="/recruiter/post-job" className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors">
+        <Link href="/recruiter/post-job" className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors w-full sm:w-auto">
           <Plus size={15} /> Post New Job
         </Link>
       </div>
 
       {/* Filters Row */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
-        <div className="relative">
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        <div className="relative flex-1 w-full sm:w-auto">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input 
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search job title or ID..." 
-            className="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 w-56" 
+            className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 sm:w-56" 
           />
         </div>
         <div className="flex gap-2 flex-wrap">
@@ -124,7 +124,7 @@ export default function JobsPage() {
           <select 
             value={deptFilter}
             onChange={e => setDeptFilter(e.target.value)}
-            className="appearance-none pl-3 pr-8 py-2 text-sm border border-slate-200 rounded-xl bg-white text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+            className="appearance-none pl-3 pr-8 py-2 text-sm border border-slate-200 rounded-xl bg-white text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer"
           >
             <option>Department: All</option>
             {deptFilters.map(d => <option key={d}>{d}</option>)}
@@ -135,7 +135,7 @@ export default function JobsPage() {
           <select 
             value={sortBy}
             onChange={e => setSortBy(e.target.value)}
-            className="appearance-none pl-3 pr-8 py-2 text-sm border border-slate-200 rounded-xl bg-white text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+            className="appearance-none pl-3 pr-8 py-2 text-sm border border-slate-200 rounded-xl bg-white text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer"
           >
             <option>Newest First</option>
             <option>Oldest First</option>
@@ -146,11 +146,11 @@ export default function JobsPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden animate-in fade-in duration-300">
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden animate-in fade-in duration-300">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm min-w-[800px]">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-100">
+              <tr className="bg-slate-50 border-b border-slate-200">
                 <th className="text-left px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Job Title</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Department</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Applicants</th>
@@ -159,7 +159,7 @@ export default function JobsPage() {
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-slate-100">
               {sortedJobs.length > 0 ? (
                 sortedJobs.map(({ title, id, posted, dept, applicants, newApplicants, matchAvg, status }) => (
                   <tr key={id} className="hover:bg-slate-50/50 transition-colors">
@@ -221,7 +221,7 @@ export default function JobsPage() {
           </table>
         </div>
         {/* Pagination */}
-        <div className="flex items-center justify-between px-6 py-3 border-t border-slate-100 text-xs text-slate-400">
+        <div className="flex items-center justify-between px-6 py-3 border-t border-slate-200 text-xs text-slate-400">
           <span>Showing {sortedJobs.length} of {jobsList.length} results</span>
           <div className="flex gap-1">
             <button className="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-slate-50">1</button>
