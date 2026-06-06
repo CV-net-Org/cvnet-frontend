@@ -65,14 +65,14 @@ export default function RecruiterSettingsPage() {
         {/* Content Area */}
         <div className="lg:col-span-3 space-y-6">
           
-          <div className="bg-white border border-slate-200 rounded-[2.5rem] p-8 shadow-xl shadow-slate-200/40">
+          <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
             
             {/* Profile Section */}
             {activeSection === 'profile' && (
-              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
                 <div className="flex items-center gap-6">
                   <div className="relative group">
-                    <div className="w-24 h-24 rounded-3xl bg-slate-100 flex items-center justify-center text-slate-400 border-2 border-dashed border-slate-200 group-hover:border-blue-400 transition-colors cursor-pointer overflow-hidden">
+                    <div className="w-24 h-24 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 border-2 border-dashed border-slate-200 group-hover:border-blue-400 transition-colors cursor-pointer overflow-hidden">
                       <Camera size={24} />
                     </div>
                     <div className="absolute -bottom-2 -right-2 bg-blue-600 text-white p-2 rounded-xl shadow-lg border-2 border-white">
@@ -111,7 +111,7 @@ export default function RecruiterSettingsPage() {
 
             {/* Company Section */}
             {activeSection === 'company' && (
-              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
                 <div className="space-y-6">
                   <div className="space-y-2">
                     <label htmlFor="company-name" className="text-xs font-black text-slate-400 uppercase tracking-widest">Company Name</label>
@@ -134,8 +134,8 @@ export default function RecruiterSettingsPage() {
 
             {/* AI Preferences Section */}
             {activeSection === 'ai' && (
-              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="bg-blue-50 border border-blue-100 rounded-3xl p-6">
+              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6">
                   <div className="flex items-center gap-3 mb-4">
                     <Brain className="text-blue-600" />
                     <h3 className="font-bold text-blue-900">AI Screening Settings</h3>
@@ -190,7 +190,7 @@ export default function RecruiterSettingsPage() {
 
           {/* Danger Zone */}
           {activeSection === 'profile' && (
-            <div className="bg-red-50 border border-red-100 rounded-[2.5rem] p-8">
+            <div className="bg-red-50 border border-red-100 rounded-2xl p-8">
               <h3 className="font-bold text-red-900 mb-2">Danger Zone</h3>
               <p className="text-sm text-red-600 mb-6 font-medium">Once you delete your account, there is no going back. Please be certain.</p>
               <button className="text-sm font-bold text-red-600 bg-white border border-red-200 px-6 py-2.5 rounded-xl hover:bg-red-600 hover:text-white transition-all">

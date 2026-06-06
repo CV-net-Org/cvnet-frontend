@@ -62,14 +62,14 @@ export default function InterviewsPage() {
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Interviews</h1>
           <p className="text-sm text-slate-500 mt-0.5">October 2023 · GMT+1</p>
         </div>
-        <button className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors w-full sm:w-auto">
+        <button className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-all active:scale-95 w-full sm:w-auto">
           <Plus size={15} /> Schedule New
         </button>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Calendar View */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
           {/* Mini Calendar */}
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
             <div className="flex items-center justify-between mb-5">
@@ -151,7 +151,7 @@ export default function InterviewsPage() {
         </div>
 
         {/* Upcoming Requests */}
-        <div className="space-y-5">
+        <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-slate-900 tracking-tight">Upcoming Requests</h3>
@@ -159,10 +159,10 @@ export default function InterviewsPage() {
             </div>
             <div className="space-y-3">
               {upcomingRequests.map(({ role, pending }) => (
-                <div key={role} className="bg-blue-50 border border-blue-100 rounded-xl p-4">
+                <div key={role} className="bg-blue-50 border border-blue-100 rounded-xl p-4 transition-all hover:-translate-y-1 hover:shadow-md">
                   <p className="text-sm font-bold text-slate-900 tracking-tight">{role}</p>
                   <p className="text-xs text-slate-400 mt-0.5">{pending}</p>
-                  <button className="mt-3 w-full text-xs font-semibold text-blue-600 border border-blue-200 py-1.5 rounded-lg hover:bg-blue-100 transition-colors">Schedule Now</button>
+                  <button className="mt-3 w-full text-xs font-semibold text-blue-600 border border-blue-200 py-1.5 rounded-lg hover:bg-blue-100 transition-colors active:scale-[0.98]">Schedule Now</button>
                 </div>
               ))}
             </div>

@@ -44,14 +44,14 @@ export default function RecruiterDashboardPage() {
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input placeholder="Search candidates..." className="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 w-full sm:w-48" />
           </div>
-          <Link href="/recruiter/post-job" className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors">
+          <Link href="/recruiter/post-job" className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all active:scale-95">
             <Plus size={16} /> Post Job
           </Link>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
         {statsData.map(({ label, value, change, up }) => (
           <div key={label} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
             <p className="text-sm font-medium text-slate-500 mb-2">{label}</p>
@@ -64,7 +64,7 @@ export default function RecruiterDashboardPage() {
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6 mb-6">
+      <div className="grid lg:grid-cols-3 gap-6 mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
         {/* Application Trends Chart */}
         <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
           <div className="flex items-center justify-between mb-5">
@@ -120,7 +120,7 @@ export default function RecruiterDashboardPage() {
       </div>
 
       {/* Top Candidates */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-1000">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
           <div>
             <h2 className="font-bold text-slate-900 tracking-tight">Top Ranked Candidates</h2>

@@ -57,13 +57,13 @@ export default function AnalyticsPage() {
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Analytics</h1>
           <p className="text-slate-500 text-sm mt-0.5">Oct 1, 2023 – Oct 31, 2023</p>
         </div>
-        <button className="flex items-center justify-center gap-2 border border-slate-200 text-slate-600 text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-slate-50 transition-colors w-full sm:w-auto">
+        <button className="flex items-center justify-center gap-2 border border-slate-200 text-slate-600 text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-slate-50 transition-all active:scale-95 w-full sm:w-auto">
           <Download size={15} /> Export Report
         </button>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
         {kpis.map(({ label, value, sub, change, up }) => (
           <div key={label} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
             <p className="text-xs font-medium text-slate-500 mb-1">{label}</p>
@@ -77,7 +77,7 @@ export default function AnalyticsPage() {
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6 mb-6">
+      <div className="grid lg:grid-cols-2 gap-6 mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
         {/* Hiring Pipeline Velocity */}
         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
           <h2 className="font-bold text-slate-900 tracking-tight mb-1">Hiring Pipeline Velocity</h2>
@@ -160,7 +160,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Skill Demand Heatmap */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-6">
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-6 animate-in fade-in slide-in-from-bottom-8 duration-1000">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
           <div>
             <h2 className="font-bold text-slate-900 tracking-tight">Skill Demand vs. Supply</h2>

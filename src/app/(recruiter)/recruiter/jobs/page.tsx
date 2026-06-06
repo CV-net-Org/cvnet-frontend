@@ -93,7 +93,7 @@ export default function JobsPage() {
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Job Management</p>
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Jobs</h1>
         </div>
-        <Link href="/recruiter/post-job" className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors w-full sm:w-auto">
+        <Link href="/recruiter/post-job" className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-all active:scale-95 w-full sm:w-auto">
           <Plus size={15} /> Post New Job
         </Link>
       </div>
@@ -146,7 +146,7 @@ export default function JobsPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden animate-in fade-in duration-300">
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="overflow-x-auto">
           <table className="w-full text-sm min-w-[800px]">
             <thead>

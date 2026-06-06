@@ -75,14 +75,14 @@ export default function CandidatesPage() {
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Candidates Directory</p>
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Candidates</h1>
         </div>
-        <button className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors w-full sm:w-auto">
+        <button className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-all active:scale-95 w-full sm:w-auto">
           <Plus size={15} /> Add Candidate
         </button>
       </div>
 
       <div className="flex gap-6">
         {/* Filters Sidebar */}
-        <div className="hidden lg:block w-56 flex-shrink-0 space-y-5">
+        <div className="hidden lg:block w-56 flex-shrink-0 space-y-5 animate-in fade-in slide-in-from-left-4 duration-500">
           <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-bold text-slate-800">Filters</h3>
@@ -172,9 +172,9 @@ export default function CandidatesPage() {
 
           <p className="text-xs text-slate-400 mb-4">Showing {filtered.length} of 237 candidates</p>
 
-          <div className="space-y-3">
+          <div className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {filtered.map(({ initials, name, email, skills, experience, match, status, bg, text }) => (
-              <div key={email} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
+              <div key={email} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all hover:-translate-y-1">
                 <div className="flex items-start justify-between flex-wrap gap-3">
                   <div className="flex items-center gap-4">
                     <div className={`w-12 h-12 rounded-full ${bg} ${text} flex items-center justify-center text-sm font-bold flex-shrink-0`}>

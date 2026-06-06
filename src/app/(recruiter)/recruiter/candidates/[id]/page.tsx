@@ -139,7 +139,7 @@ export default function CandidateProfilePage() {
 
             <div className="p-8">
               {activeTab === 'experience' && (
-                <div className="space-y-10">
+                <div className="space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-300">
                   {candidateData.experience.map((exp, i) => (
                     <div key={i} className="flex gap-6">
                       <div className="flex flex-col items-center">
@@ -162,7 +162,7 @@ export default function CandidateProfilePage() {
               )}
 
               {activeTab === 'education' && (
-                <div className="space-y-8">
+                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
                   {candidateData.education.map((edu, i) => (
                     <div key={i} className="flex gap-6">
                       <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-500">
@@ -179,7 +179,7 @@ export default function CandidateProfilePage() {
               )}
 
               {activeTab === 'skills' && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
                   {candidateData.skills.map((skill, i) => (
                     <div key={i} className="bg-slate-50 p-4 rounded-2xl border border-slate-200 group hover:border-blue-200 transition-colors">
                       <p className="text-xs font-extrabold tracking-tight text-slate-400 uppercase tracking-widest mb-1 group-hover:text-blue-600">{skill.level}</p>
