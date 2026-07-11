@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, ShieldAlert, Briefcase, LogOut } from "lucide-react"; // ✅ Added LogOut icon
+import { Loader2, ShieldAlert, Briefcase } from "lucide-react";
 import axios from "axios";
 import { auth } from "@/lib/firebaseConfig";
-import { signOut } from "firebase/auth"; // ✅ Added Firebase signOut
 
 type UserRecord = {
   uid: string;
@@ -63,22 +62,11 @@ export default function AdminUsersPage() {
     }
   };
 
-  // ✅ NEW: Logout Handler
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      window.location.href = "/login"; // Redirect to login page
-    } catch (error) {
-      console.error("Failed to log out", error);
-    }
-  };
-
   if (isLoading) return <div className="flex justify-center mt-20"><Loader2 className="animate-spin text-blue-600" size={40} /></div>;
 
   return (
     <div className="px-4 py-6 sm:px-6 lg:p-8 max-w-6xl mx-auto">
       
-      {/* ✅ UPDATED: Header area now includes the Log Out button */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8">
         <div className="flex items-start sm:items-center gap-3">
           <div className="w-11 h-11 sm:w-12 sm:h-12 bg-slate-900 text-white rounded-xl flex items-center justify-center shrink-0">
@@ -90,14 +78,6 @@ export default function AdminUsersPage() {
           </div>
         </div>
 
-        {/* Log Out Button */}
-        <button
-          onClick={handleLogout}
-          className="inline-flex items-center justify-center gap-2 bg-white border border-slate-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 text-slate-600 px-4 py-2.5 rounded-xl text-sm font-bold transition-colors shadow-sm w-full sm:w-auto"
-        >
-          <LogOut size={16} />
-          Log Out
-        </button>
       </div>
 
       <div className="space-y-4">
