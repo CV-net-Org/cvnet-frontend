@@ -11,22 +11,16 @@ import axios from "axios";
 const API_URL = "http://localhost:5167/api";
 
 export const authService = {
-  // Enhanced: Standard Email/Password Signup with explicit Error Mapping
-  // Enhanced: Standard Email/Password Signup with explicit Error Mapping
   async signUp(firstName: string, lastName: string, email: string, pass: string, role: string, agreement: string) {
     try {
-      // A. Register with Firebase (This creates the account but leaves the name blank)
       const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
       
-      // ✅ FIX: Instantly inject the combined Full Name into the new Firebase Identity
       await updateProfile(userCredential.user, {
         displayName: `${firstName} ${lastName}`.trim()
       });
       
-      // B. Extract the secure ID token from the new Firebase session
       const idToken = await userCredential.user.getIdToken();
       
-      // C. Post context data securely via API to your .NET system
       return await axios.post(`${API_URL}/Auth/signup`, {
         uid: userCredential.user.uid,
         email: email,
@@ -54,19 +48,66 @@ export const authService = {
   },
 
   async login(email: string, pass: string) {
+    console.log(`[DEBUG-FRONTEND] Starting email login for: ${email}`);
     const userCredential = await signInWithEmailAndPassword(auth, email, pass);
     const idToken = await userCredential.user.getIdToken();
-    return await axios.post(`${API_URL}/Auth/login`, { idToken });
+    console.log(`[DEBUG-FRONTEND] Firebase auth successful. Token snippet: ${idToken.substring(0, 15)}...`);
+    
+    try {
+      console.log(`[DEBUG-FRONTEND] Sending POST request to ${API_URL}/Auth/login`);
+      const response = await axios.post(`${API_URL}/Auth/login`, 
+        { idToken }, 
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`
+          }
+        }
+      );
+      console.log(`[DEBUG-FRONTEND] Backend accepted token. Response:`, response.data);
+      return response;
+    } catch (error: any) {
+      console.error(`[DEBUG-FRONTEND] ❌ Backend rejected the login request!`);
+      if (error.response) {
+        console.error(`[DEBUG-FRONTEND] Status Code: ${error.response.status}`);
+        console.error(`[DEBUG-FRONTEND] Error Data:`, error.response.data);
+      } else {
+        console.error(`[DEBUG-FRONTEND] Network/Axios Error:`, error.message);
+      }
+      throw error;
+    }
   },
 
   async loginWithGoogle(agreement?: string) {
+    console.log(`[DEBUG-FRONTEND] Starting Google login`);
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
     const idToken = await result.user.getIdToken();
+    console.log(`[DEBUG-FRONTEND] Google auth successful. Token snippet: ${idToken.substring(0, 15)}...`);
 
-    return await axios.post(`${API_URL}/Auth/login`, { 
-      idToken,
-      agreement: agreement || "Agreed" 
-    });
+    try {
+      console.log(`[DEBUG-FRONTEND] Sending POST request to ${API_URL}/Auth/login`);
+      const response = await axios.post(`${API_URL}/Auth/login`, 
+        { 
+          idToken,
+          agreement: agreement || "Agreed" 
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`
+          }
+        }
+      );
+      console.log(`[DEBUG-FRONTEND] Backend accepted Google token. Response:`, response.data);
+      return response;
+    } catch (error: any) {
+      console.error(`[DEBUG-FRONTEND] ❌ Backend rejected the Google login request!`);
+      if (error.response) {
+        console.error(`[DEBUG-FRONTEND] Status Code: ${error.response.status}`);
+        console.error(`[DEBUG-FRONTEND] Error Data:`, error.response.data);
+      } else {
+        console.error(`[DEBUG-FRONTEND] Network/Axios Error:`, error.message);
+      }
+      throw error;
+    }
   }
 };
