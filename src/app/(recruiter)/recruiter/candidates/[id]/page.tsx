@@ -31,6 +31,16 @@ const formatMonthYear = (dateString?: string) => {
     return new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' }).format(d);
   } catch { return dateString; }
 };
+const formatExternalUrl = (url?: string) => {
+  if (!url) return undefined;
+  const trimmed = url.trim();
+  // If it already has http:// or https://, return it as is
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return trimmed;
+  }
+  // Otherwise, force it to be an absolute URL
+  return `https://${trimmed}`;
+};
 
 const asArray = <T,>(v: T | T[] | null | undefined): T[] => {
   if (!v) return [];
@@ -168,7 +178,7 @@ function InfoCard({ title, meta, description, href }: {
       <div className="flex items-start justify-between gap-3">
         <p className="text-sm font-semibold text-slate-900 leading-snug">{title}</p>
         {href && (
-          <a href={href} target="_blank" rel="noreferrer"
+          <a href={formatExternalUrl(href)} target="_blank" rel="noreferrer"
             className="shrink-0 w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-blue-600 hover:border-blue-200 transition-colors">
             <ExternalLink size={12} />
           </a>
@@ -382,7 +392,7 @@ export default function CandidateProfilePage() {
                 {/* Links */}
                 <div className="flex flex-wrap gap-2 mt-3">
                   {data.portfolioUrl && (
-                    <a href={data.portfolioUrl} target="_blank" rel="noopener noreferrer"
+                    <a href={formatExternalUrl(data.portfolioUrl)} target="_blank" rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-300 bg-emerald-900/30 border border-emerald-700/30 px-3 py-1.5 rounded-lg hover:bg-emerald-900/50 transition-colors">
                       <ExternalLink size={11} /> Portfolio
                     </a>
@@ -394,10 +404,13 @@ export default function CandidateProfilePage() {
                     </a>
                   )}
                   {asArray(data.socialLinks).map((link, i) => {
-                    const href = firstNonEmpty(link?.profileUrl, link?.url, link?.href);
-                    if (!href) return null;
+                    const rawHref = firstNonEmpty(link?.profileUrl, link?.url, link?.href);
+                    if (!rawHref) return null;
+                    
+                    const safeHref = formatExternalUrl(rawHref);
+                    
                     return (
-                      <a key={i} href={href} target="_blank" rel="noopener noreferrer"
+                      <a key={i} href={safeHref} target="_blank" rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-300 bg-blue-900/30 border border-blue-700/30 px-3 py-1.5 rounded-lg hover:bg-blue-900/50 transition-colors">
                         <Globe2 size={11} /> {getLinkLabel(link, i)}
                       </a>

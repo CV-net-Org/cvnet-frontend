@@ -836,16 +836,31 @@ export default function CVPage() {
             {/* ── 14. Social Links ── */}
             {showSection("Social Links") && (
               <div ref={sectionRefs["Social Links"]}>
-                <SectionCard icon={Link2} title="Social links" onAdd={() => addArrayItem("socialLinks", { platformName: "LinkedIn", profileUrl: "" })} addLabel="Add link">
+                <SectionCard icon={Link2} title="Social links" onAdd={() => addArrayItem("socialLinks", { platformName: "", profileUrl: "" })} addLabel="Add link">
                   {(!profile.socialLinks?.length) ? <EmptyState label="No social links added yet." /> : (
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {profile.socialLinks.map((soc: any, idx: number) => (
-                        <InlineEntry key={soc.id} onRemove={() => removeArrayItem("socialLinks", idx)}>
-                          <SelectInput value={soc.platformName || "LinkedIn"} onChange={e => handleArrayChange("socialLinks", idx, "platformName", e.target.value)} className="border-0 bg-transparent w-28 text-xs font-bold focus:ring-0 p-0 text-slate-700">
-                            <option>LinkedIn</option><option>GitHub</option><option>Twitter</option><option>Portfolio</option><option>Other</option>
-                          </SelectInput>
-                          <TextInput type="url" value={soc.profileUrl || ""} onChange={e => handleArrayChange("socialLinks", idx, "profileUrl", e.target.value)} placeholder="https://…" className="flex-1 border-0 border-l border-slate-200 pl-3 focus:ring-0 bg-transparent text-blue-600 text-xs" />
-                        </InlineEntry>
+                        <EntryCard key={soc.id} onRemove={() => removeArrayItem("socialLinks", idx)}>
+                          <div className="grid sm:grid-cols-2 gap-3">
+                            <div>
+                              <FieldLabel>Platform name</FieldLabel>
+                              <TextInput 
+                                value={soc.platformName || ""} 
+                                onChange={e => handleArrayChange("socialLinks", idx, "platformName", e.target.value)} 
+                                placeholder="e.g. LinkedIn, GitHub, Portfolio" 
+                              />
+                            </div>
+                            <div>
+                              <FieldLabel>Profile URL</FieldLabel>
+                              <TextInput 
+                                type="url" 
+                                value={soc.profileUrl || ""} 
+                                onChange={e => handleArrayChange("socialLinks", idx, "profileUrl", e.target.value)} 
+                                placeholder="https://..." 
+                              />
+                            </div>
+                          </div>
+                        </EntryCard>
                       ))}
                     </div>
                   )}

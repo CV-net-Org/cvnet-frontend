@@ -42,7 +42,14 @@ const getLinkLabel = (link: any, index: number) => {
   if (typeof link === 'string') return link;
   return firstNonEmpty(link?.platformName, link?.platform_name, link?.platform, link?.name, link?.title, link?.label) || `Link ${index + 1}`;
 };
-
+const formatExternalUrl = (url?: string) => {
+  if (!url) return undefined;
+  const trimmed = url.trim();
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return trimmed;
+  }
+  return `https://${trimmed}`;
+};
 const normalizeProfile = (raw: any): any => ({
   appId: firstNonEmpty(raw?.appId, raw?.id),
   fullName: firstNonEmpty(raw?.fullName, raw?.name, raw?.displayName, raw?.candidateName),
@@ -231,21 +238,23 @@ function FullProfileModal({ appId, portalId, pin, onClose }: { appId: string; po
                     </div>
                     <div className="flex flex-wrap gap-2 justify-center md:justify-start">
                       {data.portfolioUrl && (
-                        <a href={data.portfolioUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs font-extrabold text-emerald-700 shadow-sm transition hover:bg-emerald-100 hover:shadow-md">
+                        <a href={formatExternalUrl(data.portfolioUrl)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs font-extrabold text-emerald-700 shadow-sm transition hover:bg-emerald-100 hover:shadow-md">
                           <ExternalLink size={13} /> Portfolio
                         </a>
                       )}
                       {data.cvUrl && (
-                        <a href={data.cvUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-extrabold text-slate-700 shadow-sm transition hover:bg-slate-50 hover:shadow-md">
-                          <Download size={13} /> CV / Resume
-                        </a>
+                      <a href={formatExternalUrl(data.cvUrl)} target="_blank" rel="noopener noreferrer"
+                        className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-5 py-3 rounded-xl font-bold shadow-md transition-colors shrink-0 text-sm mt-4 md:mt-0">
+                        <Download size={16} /> Original CV
+                      </a>
                       )}
                       {asArray(data.socialLinks).map((link, i) => {
-                        const href = firstNonEmpty(link?.profileUrl, link?.url, link?.href);
-                        if (!href) return null;
+                        const rawHref = firstNonEmpty(link?.profileUrl, link?.url, link?.href);
+                        if (!rawHref) return null;
+                        const safeHref = formatExternalUrl(rawHref);
                         const label = getLinkLabel(link, i);
                         return (
-                          <a key={`${label}-${i}`} href={href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-extrabold text-blue-700 shadow-sm transition hover:bg-blue-100 hover:shadow-md">
+                          <a key={`${label}-${i}`} href={safeHref} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-extrabold text-blue-700 shadow-sm transition hover:bg-blue-100 hover:shadow-md">
                             <Globe2 size={13} /> {label}
                           </a>
                         );
@@ -341,25 +350,33 @@ function FullProfileModal({ appId, portalId, pin, onClose }: { appId: string; po
                       </div>
                     )}
 
-                    {activeTab === 'skills' && (
+{activeTab === 'skills' && (
                       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                         {asArray(data.skills).map((skill, i) => {
                           const level = getSkillLevel(skill);
                           const name = getSkillName(skill, i);
+                          
+                          // 1. Convert to lowercase for a safe, case-insensitive check
+                          const normalizedLevel = level.toLowerCase().trim();
+                          
                           const levelTone =
-                            level === 'Expert' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' :
-                            level === 'Intermediate' ? 'border-blue-200 bg-blue-50 text-blue-700' :
-                            'border-slate-200 bg-slate-50 text-slate-600';
+                            normalizedLevel === 'expert' ? 'border-emerald-200 bg-emerald-50 text-emerald-800' :
+                            normalizedLevel === 'intermediate' ? 'border-blue-200 bg-blue-50 text-blue-800' :
+                            'border-slate-200 bg-slate-50 text-slate-700';
+
                           return (
                             <div key={`${name}-${i}`} className={`rounded-2xl border p-4 shadow-sm transition hover:shadow-md ${levelTone}`}>
                               <div className="flex items-start justify-between gap-3">
-                                <h4 className="font-extrabold text-slate-900 text-sm leading-snug">{name}</h4>
-                                <span className="rounded-full bg-white/80 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest">
+                                {/* 2. Removed text-slate-900 so it inherits the color from levelTone */}
+                                <h4 className="font-extrabold text-sm leading-snug">{name}</h4>
+                                
+                                {/* 3. Made the badge text color match the parent but stand out with a white background */}
+                                <span className="rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest shadow-sm">
                                   {level}
                                 </span>
                               </div>
                               {skill?.description && (
-                                <p className="mt-3 text-xs leading-relaxed text-slate-600">{skill.description}</p>
+                                <p className="mt-3 text-xs leading-relaxed opacity-80">{skill.description}</p>
                               )}
                             </div>
                           );
@@ -374,7 +391,7 @@ function FullProfileModal({ appId, portalId, pin, onClose }: { appId: string; po
                             <div className="flex justify-between items-start mb-2">
                               <h4 className="font-bold text-slate-800 text-base">{proj.name}</h4>
                               {proj.sourceLink && (
-                                <a href={proj.sourceLink} target="_blank" rel="noreferrer" className="text-blue-600 hover:text-blue-700 bg-blue-50 p-2 rounded-lg">
+                                <a href={formatExternalUrl(proj.sourceLink)} target="_blank" rel="noreferrer" className="text-blue-600 hover:text-blue-700 bg-blue-50 p-2 rounded-lg">
                                   <ExternalLink size={14} />
                                 </a>
                               )}
