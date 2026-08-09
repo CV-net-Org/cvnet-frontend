@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { auth } from "@/lib/firebaseConfig";
+import apiClient from "@/lib/apiClient"; // Adjust path if necessary
 
 // --- TYPES & CONFIG ---
 export type ApplicationRecord = { 
@@ -88,9 +89,9 @@ export default function UnifiedApplicationsPage() {
         const token = await user.getIdToken();
         
         const [jobsRes, appsRes, profilesRes] = await Promise.all([
-          axios.get("http://localhost:5167/api/CandidateJob/active", { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: [] })),
-          axios.get("http://localhost:5167/api/Application/my-applications", { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: [] })),
-          axios.get("http://localhost:5167/api/Application/my-profiles", { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: [] }))
+          apiClient.get("/CandidateJob/active").catch(() => ({ data: [] })),
+          apiClient.get("/Application/my-applications").catch(() => ({ data: [] })),
+          apiClient.get("/Application/my-profiles").catch(() => ({ data: [] }))
         ]);
         
         setJobs(jobsRes.data || []);
@@ -152,10 +153,9 @@ export default function UnifiedApplicationsPage() {
     setIsFetchingProfile(true);
 
     try {
-      const token = await auth.currentUser?.getIdToken();
       const [profileRes, matrixRes] = await Promise.all([
-        axios.get(`http://localhost:5167/api/Application/profile-details/${selectedProfileId}`, { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get(`http://localhost:5167/api/Dashboard/readiness-matrix?profileId=${selectedProfileId}`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: { matchScore: 0, industryScore: 80 } })) // Fallback if matrix fails
+        apiClient.get(`/Application/profile-details/${selectedProfileId}`),
+        apiClient.get(`/Dashboard/readiness-matrix?profileId=${selectedProfileId}`).catch(() => ({ data: { matchScore: 0, industryScore: 80 } })) // Fallback if matrix fails
       ]);
       
       setReviewData({
@@ -201,9 +201,7 @@ export default function UnifiedApplicationsPage() {
         ExperienceJson: JSON.stringify(reviewData.experience)
       };
 
-      await axios.post("http://localhost:5167/api/Application/apply", payload, { 
-        headers: { Authorization: `Bearer ${token}` } 
-      });
+      await apiClient.post("/Application/apply", payload);
 
       alert("Application Submitted Successfully!");
       setSelectedJob(null);

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Lock, Users, Clock, Brain, Loader2, ArrowLeft, X, Briefcase, GraduationCap, FolderGit2, BookOpen, Microscope, Code, Award, Globe2, HeartHandshake, UserIcon, ExternalLink, Download, Mail, Phone } from 'lucide-react';
-import axios from 'axios';
+import apiClient from '@/lib/apiClient';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const formatMonthYear = (dateString?: string) => {
@@ -118,7 +118,7 @@ function FullProfileModal({ appId, portalId, pin, onClose }: { appId: string; po
     const fetchProfile = async () => {
       try {
         // 🔒 ZERO TRUST: We pass the PIN to fetch the profile.
-        const res = await axios.get(`http://localhost:5167/api/interviews/shared/${portalId}/applicant/${appId}`, {
+        const res = await apiClient.get(`/interviews/shared/${portalId}/applicant/${appId}`, {
           headers: { 'X-Portal-PIN': pin }
         });
         setData(normalizeProfile(res.data?.data ?? res.data));
@@ -554,7 +554,7 @@ export default function SecureJudgeBoardPortal() {
     setAuthError('');
     
     try {
-      const res = await axios.get(`http://localhost:5167/api/interviews/shared/${portalId}/data`, {
+      const res = await apiClient.get(`/interviews/shared/${portalId}/data`, {
         headers: { 'X-Portal-PIN': password }
       });
       

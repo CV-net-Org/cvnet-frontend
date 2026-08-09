@@ -9,10 +9,9 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { auth } from "@/lib/firebaseConfig";
+import apiClient from "@/lib/apiClient";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-
-const API_URL = "http://localhost:5167/api/Dashboard";
 
 type Profile = { id: string; jobRole: string; isMaster?: boolean };
 type GlobalStats = { applied: number; requests: number; rejects: number };
@@ -177,19 +176,13 @@ export default function DashboardPage() {
   const fetchDashboardData = async (profileId?: string, currentUser = auth.currentUser) => {
     try {
       if (!currentUser) return;
-      const token = await currentUser.getIdToken();
-      const headers = { Authorization: `Bearer ${token}` };
+      // 🚀 Token and Base URL handled automatically by apiClient
 
-      // First call — get profiles list + whatever the backend resolved as active
-      const res = await axios.get(`${API_URL}/summary`, {
-        headers,
+      // First call — get profiles list
+      const res = await apiClient.get("/Dashboard/summary", {
         ...(profileId ? { params: { profileId } } : {}),
       });
 
-      // The backend may resolve activeProfileId to "General CV Profile" because
-      // default_profile_id is set to that ID by the CV editor. That profile has no
-      // skill requirements or job-application links, so all stats show 0.
-      // Fix: detect this case and override with the first real job role profile.
       const allProfiles: Profile[] = res.data?.profiles || [];
       const jobRoleProfiles = allProfiles.filter(p => p.jobRole !== "General CV Profile");
       const apiActiveId: string = res.data?.activeProfileId || "";
@@ -197,22 +190,17 @@ export default function DashboardPage() {
 
       let effectivePid: string;
       if (profileId) {
-        // Explicit switch from the dropdown — trust it
         effectivePid = profileId;
       } else if (apiActiveIsJobRole) {
-        // Backend already resolved to a real job role
         effectivePid = apiActiveId;
       } else {
-        // Backend resolved to General CV Profile or nothing — use first real job role
         effectivePid = jobRoleProfiles[0]?.id || apiActiveId;
       }
 
-
-      // If we need a different profile than what the summary was fetched for, re-fetch
       let summaryData = res.data;
       if (effectivePid && effectivePid !== apiActiveId && !profileId) {
-        const reRes = await axios.get(`${API_URL}/summary`, {
-          headers,
+        // Second call — re-fetch if needed
+        const reRes = await apiClient.get("/Dashboard/summary", {
           params: { profileId: effectivePid },
         });
         summaryData = reRes.data;
@@ -222,8 +210,9 @@ export default function DashboardPage() {
 
       if (effectivePid) {
         setActiveProfileId(effectivePid);
-        const mx = await axios.get(`${API_URL}/readiness-matrix`, {
-          headers, params: { profileId: effectivePid },
+        // Third call — readiness matrix
+        const mx = await apiClient.get("/Dashboard/readiness-matrix", {
+          params: { profileId: effectivePid },
         });
         setSkillBreakdown(mx.data?.breakdown || []);
         setMatrixMatchScore(mx.data?.matchScore || 0);
@@ -235,8 +224,9 @@ export default function DashboardPage() {
   const loadTrackMeta = async (currentUser = auth.currentUser) => {
     try {
       if (!currentUser) return;
-      const token = await currentUser.getIdToken();
-      const res = await axios.get(`${API_URL}/available-tracks`, { headers: { Authorization: `Bearer ${token}` } });
+      
+      const res = await apiClient.get("/Dashboard/available-tracks");
+      
       setAvailableTracks(res.data || []);
       if (res.data?.length) {
         setTargetCategory(res.data[0].categoryName);
@@ -258,21 +248,33 @@ export default function DashboardPage() {
     if (!targetRole || !targetCategory) return;
     setIsLoading(true);
     try {
-      const token = await auth.currentUser?.getIdToken();
-      await axios.post(`${API_URL}/roles`, { jobRole: targetRole, category: targetCategory },
-        { headers: { Authorization: `Bearer ${token}` } });
+      await apiClient.post("/Dashboard/roles", { 
+        jobRole: targetRole, 
+        category: targetCategory 
+      });
+      
       setShowAddTrack(false);
       fetchDashboardData();
-    } catch (e) { console.error(e); setIsLoading(false); }
+    } catch (e) { 
+      console.error(e); 
+      setIsLoading(false); 
+    }
   };
 
   const handleRemoveRole = async (force = false) => {
     try {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await axios.delete(`${API_URL}/roles/${activeProfileId}?force=${force}`,
-        { headers: { Authorization: `Bearer ${token}` } });
-      if (res.data?.isBlocked) { alert(res.data.message); setDeleteWarning(null); return; }
-      if (res.data?.needsConfirmation && !force) { setDeleteWarning(res.data.message); return; }
+      const res = await apiClient.delete(`/Dashboard/roles/${activeProfileId}?force=${force}`);
+      
+      if (res.data?.isBlocked) { 
+        alert(res.data.message); 
+        setDeleteWarning(null); 
+        return; 
+      }
+      if (res.data?.needsConfirmation && !force) { 
+        setDeleteWarning(res.data.message); 
+        return; 
+      }
+      
       setDeleteWarning(null);
       fetchDashboardData();
     } catch (e) { console.error(e); }

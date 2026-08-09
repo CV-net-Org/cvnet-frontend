@@ -6,9 +6,7 @@ import {
   signInWithPopup,
   updateProfile
 } from "firebase/auth";
-import axios from "axios";
-
-const API_URL = "http://localhost:5167/api";
+import apiClient from "@/lib/apiClient";
 
 export const authService = {
   async signUp(firstName: string, lastName: string, email: string, pass: string, role: string, agreement: string) {
@@ -19,19 +17,13 @@ export const authService = {
         displayName: `${firstName} ${lastName}`.trim()
       });
       
-      const idToken = await userCredential.user.getIdToken();
-      
-      return await axios.post(`${API_URL}/Auth/signup`, {
+      return await apiClient.post("/Auth/signup", {
         uid: userCredential.user.uid,
         email: email,
         firstName: firstName, 
         lastName: lastName,   
         role: role,
         agreement: agreement
-      }, {
-        headers: {
-          Authorization: `Bearer ${idToken}`
-        }
       });
       
     } catch (error: any) {
@@ -54,15 +46,11 @@ export const authService = {
     console.log(`[DEBUG-FRONTEND] Firebase auth successful. Token snippet: ${idToken.substring(0, 15)}...`);
     
     try {
-      console.log(`[DEBUG-FRONTEND] Sending POST request to ${API_URL}/Auth/login`);
-      const response = await axios.post(`${API_URL}/Auth/login`, 
-        { idToken }, 
-        {
-          headers: {
-            Authorization: `Bearer ${idToken}`
-          }
-        }
-      );
+      console.log(`[DEBUG-FRONTEND] Sending POST request to /Auth/login`);
+      
+      // Token header is handled by apiClient; idToken remains in the body
+      const response = await apiClient.post("/Auth/login", { idToken });
+      
       console.log(`[DEBUG-FRONTEND] Backend accepted token. Response:`, response.data);
       return response;
     } catch (error: any) {
@@ -85,18 +73,13 @@ export const authService = {
     console.log(`[DEBUG-FRONTEND] Google auth successful. Token snippet: ${idToken.substring(0, 15)}...`);
 
     try {
-      console.log(`[DEBUG-FRONTEND] Sending POST request to ${API_URL}/Auth/login`);
-      const response = await axios.post(`${API_URL}/Auth/login`, 
-        { 
-          idToken,
-          agreement: agreement || "Agreed" 
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${idToken}`
-          }
-        }
-      );
+      console.log(`[DEBUG-FRONTEND] Sending POST request to /Auth/login`);
+      
+      const response = await apiClient.post("/Auth/login", { 
+        idToken,
+        agreement: agreement || "Agreed" 
+      });
+      
       console.log(`[DEBUG-FRONTEND] Backend accepted Google token. Response:`, response.data);
       return response;
     } catch (error: any) {

@@ -16,8 +16,7 @@ import {
 } from "lucide-react";
 import { auth } from "@/lib/firebaseConfig";
 import { onAuthStateChanged, signOut, User as FirebaseUser } from "firebase/auth";
-import axios from "axios";
-
+import apiClient from "@/lib/apiClient";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/cv", label: "My CV", icon: FileText },
@@ -32,7 +31,8 @@ export default function CandidateSidebar() {
   const [isOpen, setIsOpen] = useState(false);
   
   // State to hold the name strictly from the PostgreSQL database
-  const [dbFullName, setDbFullName] = useState<string>("Niranga Nayanajith"); 
+
+  const [dbFullName, setDbFullName] = useState<string>("Niranga Nayanajith");
 
   // Sync the sidebar with the real Firebase User AND PostgreSQL
   useEffect(() => {
@@ -41,12 +41,7 @@ export default function CandidateSidebar() {
       
       if (user) {
         try {
-          const token = await user.getIdToken();
-          
-          // Fetch the SQL profile row using your existing UserProfileController
-          const res = await axios.get(`http://localhost:5167/api/UserProfile/full-profile?userId=${user.uid}`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
+          const res = await apiClient.get(`/UserProfile/full-profile?userId=${user.uid}`);
           
           // Override the default name with the actual Postgres full_name
           if (res.data && res.data.fullName && res.data.fullName.trim() !== "") {

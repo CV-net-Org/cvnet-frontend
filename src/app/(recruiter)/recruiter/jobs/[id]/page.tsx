@@ -10,7 +10,7 @@ import {
   Globe2, Microscope, HeartHandshake, User as UserIcon, X, ChevronRight,
   ExternalLink, Code
 } from 'lucide-react';
-import axios from 'axios';
+import apiClient from '@/lib/apiClient';
 import { auth } from '@/lib/firebaseConfig';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -176,10 +176,10 @@ function FullProfileModal({ appId, jobId, onClose }: { appId: string; jobId: str
       try {
         const user = auth.currentUser;
         if (!user) return;
-        const token = await user.getIdToken();
-        const res = await axios.get(`http://localhost:5167/api/JobDetails/applicant-profile/${appId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        
+        // Token and Base URL are handled automatically by apiClient
+        const res = await apiClient.get(`/JobDetails/applicant-profile/${appId}`);
+        
         setData(normalizeProfile(res.data?.data ?? res.data));
       } catch (e) {
         console.error('Failed to load full profile', e);
@@ -646,10 +646,9 @@ export default function JobDetailPage() {
     try {
       const user = auth.currentUser;
       if (!user) return;
-      const token = await user.getIdToken();
-      const res = await axios.get(`http://localhost:5167/api/JobDetails/${jobId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      
+      const res = await apiClient.get(`/JobDetails/${jobId}`);
+      
       setJob(res.data.details);
       setApplicants(res.data.applicants);
     } catch (error) {
@@ -667,8 +666,7 @@ export default function JobDetailPage() {
   const handleCloseJob = async () => {
     if (!confirm("Are you sure? This will close the job and reject all pending applicants.")) return;
     try {
-      const token = await auth.currentUser?.getIdToken();
-      await axios.post(`http://localhost:5167/api/JobDetails/${jobId}/close`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      await apiClient.post(`/JobDetails/${jobId}/close`, {});
       alert("Job Closed successfully.");
       fetchJobData();
       setIsStatusOpen(false);
@@ -677,8 +675,7 @@ export default function JobDetailPage() {
 
   const handleRepostJob = async () => {
     try {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await axios.post(`http://localhost:5167/api/JobDetails/${jobId}/repost`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await apiClient.post(`/JobDetails/${jobId}/repost`, {});
       alert("Job Reposted successfully!");
       router.push(`/recruiter/jobs/${res.data.newJobId}`);
     } catch { alert("Error reposting job."); }
@@ -686,10 +683,9 @@ export default function JobDetailPage() {
 
   const handleApplicantAction = async (appId: string, action: 'interview' | 'reject') => {
     try {
-      const token = await auth.currentUser?.getIdToken();
       const endpoint = action === 'interview' ? 'interview' : 'reject';
       const payload = action === 'interview' ? { message: "Invitation to interview" } : { reason: "Position closed or candidate mismatch" };
-      await axios.post(`http://localhost:5167/api/JobDetails/applicant/${appId}/${endpoint}`, payload, { headers: { Authorization: `Bearer ${token}` } });
+      await apiClient.post(`/JobDetails/applicant/${appId}/${endpoint}`, payload);
       fetchJobData();
     } catch { alert(`Error processing ${action}`); }
   };

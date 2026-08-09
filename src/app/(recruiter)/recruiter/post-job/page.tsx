@@ -6,7 +6,7 @@ import {
   GraduationCap, Banknote, ListChecks, Sparkles, ChevronRight,
   Plus, Check, AlertTriangle
 } from 'lucide-react';
-import axios from 'axios';
+import apiClient from '@/lib/apiClient';
 import { auth } from '@/lib/firebaseConfig';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -168,9 +168,7 @@ export default function PostJobPage() {
   useEffect(() => {
     const fetchMeta = async (token: string) => {
       try {
-        const res = await axios.get('http://localhost:5167/api/CompanyJob/categories', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await apiClient.get('/CompanyJob/categories');
         setCategories(res.data);
         if (res.data.length > 0) {
           setCategoryId(res.data[0].id);
@@ -222,7 +220,7 @@ export default function PostJobPage() {
       }
       if (!token) { alert('Authentication lost. Please reload.'); setIsLoading(false); return; }
 
-      await axios.post('http://localhost:5167/api/CompanyJob/create', {
+      await apiClient.post('/CompanyJob/create', {
         categoryId, jobTitle, employmentType, workplaceType,
         location: location || null,
         openings,

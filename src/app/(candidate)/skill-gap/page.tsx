@@ -14,8 +14,9 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { auth } from "@/lib/firebaseConfig";
+import apiClient from "@/lib/apiClient";
 
-const API_URL = "http://localhost:5167/api/SkillGap";
+
 
 const statusConfig: Record<string, { bg: string; text: string }> = {
   "Critical Gap": { bg: "bg-red-100", text: "text-red-700" },
@@ -51,12 +52,10 @@ export default function SkillGapPage() {
   const fetchSkillGapData = async (profileId?: string) => {
     try {
       if (!auth.currentUser) return;
-      const idToken = await auth.currentUser.getIdToken();
       
-      const endpoint = profileId ? `${API_URL}/analysis?profileId=${profileId}` : `${API_URL}/analysis`;
-      const res = await axios.get(endpoint, {
-        headers: { Authorization: `Bearer ${idToken}` }
-      });
+      // Token and Base URL are automatically handled by apiClient
+      const endpoint = profileId ? `/SkillGap/analysis?profileId=${profileId}` : `/SkillGap/analysis`;
+      const res = await apiClient.get(endpoint);
       
       setData(res.data);
       if (res.data.activeProfileId) setActiveProfileId(res.data.activeProfileId);
