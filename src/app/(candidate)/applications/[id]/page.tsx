@@ -19,7 +19,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
 import { auth } from '@/lib/firebaseConfig';
-
+import apiClient from "@/lib/apiClient"; 
 // --- TYPES ---
 type SnapshotSkill = { skillName: string; level: string; };
 type SnapshotExperience = { companyName: string; startDate: string; endDate?: string; roleDescription: string; };
@@ -72,14 +72,9 @@ export default function CandidateProfilePage() {
   useEffect(() => {
     const fetchApplicationDetails = async () => {
       try {
-        const user = auth.currentUser;
-        if (!user) return;
-        const token = await user.getIdToken();
-        
-        const response = await axios.get(`http://localhost:5167/api/Application/${params.id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        
+        if (!auth.currentUser) return;
+
+        const response = await apiClient.get(`/Application/${params.id}`);
         setData(response.data);
       } catch (error) {
         console.error("Failed to load application details", error);

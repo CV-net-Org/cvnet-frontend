@@ -7,7 +7,7 @@ import {
   Settings2, Trash2, ExternalLink, ChevronRight, Sparkles,
   ChevronLeft, MapPin, ChevronDown, ChevronUp
 } from 'lucide-react';
-import axios from 'axios';
+import apiClient from '@/lib/apiClient';
 import { auth } from '@/lib/firebaseConfig';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -171,9 +171,8 @@ export default function InterviewsPage() {
 
   const fetchInterviews = async () => {
     try {
-      const user = auth.currentUser;
-      const headers = user ? { Authorization: `Bearer ${await user.getIdToken()}` } : {};
-      const res = await axios.get('http://localhost:5167/api/interviews', { headers });
+      // Token and Base URL are automatically handled by apiClient
+      const res = await apiClient.get('/interviews');
       setCandidates(res.data);
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
@@ -182,9 +181,7 @@ export default function InterviewsPage() {
   const fetchActivePortals = async () => {
     setLoadingPortals(true);
     try {
-      const user = auth.currentUser;
-      const headers = user ? { Authorization: `Bearer ${await user.getIdToken()}` } : {};
-      const res = await axios.get('http://localhost:5167/api/interviews/portals', { headers });
+      const res = await apiClient.get('/interviews/portals');
       setActivePortals(res.data);
     } catch (e) { console.error(e); }
     finally { setLoadingPortals(false); }
@@ -192,9 +189,7 @@ export default function InterviewsPage() {
 
   const deletePortal = async (portalId: string) => {
     try {
-      const user = auth.currentUser;
-      const headers = user ? { Authorization: `Bearer ${await user.getIdToken()}` } : {};
-      await axios.delete(`http://localhost:5167/api/interviews/portals/${portalId}`, { headers });
+      await apiClient.delete(`/interviews/portals/${portalId}`);
       setActivePortals(prev => prev.filter(p => p.portalId !== portalId));
     } catch (e) { console.error(e); }
   };
@@ -210,11 +205,9 @@ export default function InterviewsPage() {
     if (!scheduleModal || !selectedDate) return;
     setActionLoading(true);
     try {
-      const user = auth.currentUser;
-      const headers = user ? { Authorization: `Bearer ${await user.getIdToken()}` } : {};
-      await axios.put(`http://localhost:5167/api/interviews/${scheduleModal.callId}/schedule`, {
+      await apiClient.put(`/interviews/${scheduleModal.callId}/schedule`, {
         interviewDate: new Date(selectedDate).toISOString()
-      }, { headers });
+      });
       setScheduleModal(null);
       fetchInterviews();
     } catch (e) { console.error(e); }
@@ -225,11 +218,9 @@ export default function InterviewsPage() {
     if (!rejectModal || !rejectReason) return;
     setActionLoading(true);
     try {
-      const user = auth.currentUser;
-      const headers = user ? { Authorization: `Bearer ${await user.getIdToken()}` } : {};
-      await axios.post(`http://localhost:5167/api/interviews/${rejectModal.callId}/reject`, {
+      await apiClient.post(`/interviews/${rejectModal.callId}/reject`, {
         reason: rejectReason
-      }, { headers });
+      });
       setRejectModal(null);
       fetchInterviews();
     } catch (e) { console.error(e); }
@@ -240,15 +231,9 @@ export default function InterviewsPage() {
     if (!selectedDateView || selectedJobsToShare.length === 0) return;
     setIsGenerating(true);
     try {
-      const user = auth.currentUser;
-      const headers = user ? { Authorization: `Bearer ${await user.getIdToken()}` } : {};
-      const res = await axios.post('http://localhost:5167/api/interviews/share-portal', {
+      const res = await apiClient.post('/interviews/share-portal', {
         interviewDate: new Date(selectedDateView).toISOString(),
         jobIds: selectedJobsToShare
-      }, { headers });
-      setGeneratedPortal({
-        link: `${window.location.origin}${res.data.link}`,
-        password: res.data.password
       });
       setShareStep('result');
     } catch (e) { console.error(e); }

@@ -6,7 +6,7 @@ import {
   Search, Plus, Eye, ChevronDown, Loader2,
   Briefcase, Users, TrendingUp, ChevronRight, Sparkles, SlidersHorizontal, X
 } from 'lucide-react';
-import axios from 'axios';
+import apiClient from '@/lib/apiClient';
 import { auth } from '@/lib/firebaseConfig';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -189,10 +189,10 @@ export default function JobsPage() {
       try {
         const user = auth.currentUser;
         if (!user) return;
-        const token = await user.getIdToken();
-        const response = await axios.get('http://localhost:5167/api/CompanyJob/list', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        
+        // Token and Base URL are handled automatically by apiClient
+        const response = await apiClient.get('/CompanyJob/list');
+        
         setJobsList(response.data);
       } catch (error) {
         console.error('Failed to fetch jobs:', error);

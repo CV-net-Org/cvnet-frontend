@@ -26,6 +26,7 @@ import {
   Lock,
   Globe
 } from "lucide-react";
+import apiClient from "@/lib/apiClient";
 
 export default function SettingsPage() {
   // Auth & Profile States - Cleaned up to use a single Full Name source of truth
@@ -101,12 +102,9 @@ export default function SettingsPage() {
       }
 
       // 2. Transmit standard payload to .NET (Backend handles the NoSQL splitting)
-      const idToken = await currentUser.getIdToken();
-      await axios.put("http://localhost:5167/api/Profile/update-details", {
+      await apiClient.put("/Profile/update-details", {
         fullName: fullName,
         email: email
-      }, {
-        headers: { Authorization: `Bearer ${idToken}` }
       });
 
       setStatusMessage({ type: "success", text: "Profile base information updated successfully!" });
@@ -143,13 +141,7 @@ export default function SettingsPage() {
     multipartForm.append("file", file);
 
     try {
-      const idToken = await currentUser.getIdToken();
-      const response = await axios.post("http://localhost:5167/api/Profile/upload-image", multipartForm, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
+      const response = await apiClient.post("/Profile/upload-image", multipartForm);
 
       if (response.data.status === "success") {
         const structuralCloudinaryUrl = response.data.imageUrl;
@@ -218,11 +210,7 @@ export default function SettingsPage() {
 
     setIsLoading(true);
     try {
-      const idToken = await currentUser.getIdToken();
-
-      await axios.delete("http://localhost:5167/api/User/delete-account", {
-        headers: { Authorization: `Bearer ${idToken}` }
-      });
+      await apiClient.delete("/User/delete-account");
 
       await signOut(auth);
       window.location.href = "/login";

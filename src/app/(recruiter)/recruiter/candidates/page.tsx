@@ -6,7 +6,7 @@ import {
   Search, ChevronDown, Loader2, Users, ChevronRight,
   Sparkles, SlidersHorizontal, X, ArrowUpRight, Briefcase
 } from 'lucide-react';
-import axios from 'axios';
+import apiClient from '@/lib/apiClient';
 import { auth } from '@/lib/firebaseConfig';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -145,10 +145,10 @@ export default function CandidatesPage() {
     try {
       const user = auth.currentUser;
       if (!user) return;
-      const token = await user.getIdToken();
-      const res = await axios.get('http://localhost:5167/api/candidates/jobs', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      
+      // Token and Base URL are automatically handled by apiClient
+      const res = await apiClient.get('/candidates/jobs');
+      
       setJobs(res.data);
     } catch (err) {
       console.error('Failed to fetch jobs', err);
@@ -160,14 +160,15 @@ export default function CandidatesPage() {
     try {
       const user = auth.currentUser;
       if (!user) return;
-      const token = await user.getIdToken();
+      
       const params = new URLSearchParams();
       if (selectedJobId) params.append('jobId', selectedJobId);
       if (search) params.append('search', search);
       params.append('sortOrder', sortOrder);
-      const res = await axios.get(`http://localhost:5167/api/candidates?${params}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      
+      // Token and Base URL are automatically handled by apiClient
+      const res = await apiClient.get(`/candidates?${params}`);
+      
       setCandidates(res.data);
     } catch (err) {
       console.error('Failed to fetch candidates', err);

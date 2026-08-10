@@ -8,8 +8,7 @@ import {
 import { useState, useEffect } from 'react';
 import { auth } from '@/lib/firebaseConfig';
 import { onAuthStateChanged, updateProfile, updateEmail, User as FirebaseUser } from 'firebase/auth';
-import axios from 'axios';
-
+import apiClient from '@/lib/apiClient';
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type SectionId = 'profile' | 'company' | 'ai' | 'notifications' | 'security';
@@ -155,10 +154,9 @@ export default function RecruiterSettingsPage() {
         setFullName(user.displayName || '');
         setEmail(user.email || '');
         try {
-          const token = await user.getIdToken();
-          const res = await axios.get('http://localhost:5167/api/CompanyProfile', {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          // Token and Base URL are automatically handled by apiClient
+          const res = await apiClient.get('/CompanyProfile');
+          
           if (res.data) {
             setCompanyName(res.data.name || '');
             setWebsiteUrl(res.data.siteLink || '');
@@ -182,10 +180,8 @@ export default function RecruiterSettingsPage() {
     const fd = new FormData();
     fd.append('file', file);
     try {
-      const token = await currentUser.getIdToken();
-      const res = await axios.post('http://localhost:5167/api/CompanyProfile/upload-logo', fd, {
-        headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` },
-      });
+      const res = await apiClient.post('/CompanyProfile/upload-logo', fd);
+      
       if (res.data.status === 'success') {
         await updateProfile(currentUser, { photoURL: res.data.logoUrl });
         setProfileImageUrl(res.data.logoUrl);
@@ -212,11 +208,10 @@ export default function RecruiterSettingsPage() {
     if (!currentUser) return;
     setIsSaving(true); setStatus({ type: 'success', text: null });
     try {
-      const token = await currentUser.getIdToken();
-      await axios.put('http://localhost:5167/api/CompanyProfile/update', {
+      await apiClient.put('/CompanyProfile/update', {
         name: companyName, description: companyDescription,
         siteLink: websiteUrl, hrContactPhone, employeeCount: 'SMALL_2_10',
-      }, { headers: { Authorization: `Bearer ${token}` } });
+      });
       setStatus({ type: 'success', text: 'Company details updated.' });
     } catch (err: any) {
       setStatus({ type: 'error', text: err.response?.data?.error || 'Update failed.' });

@@ -8,7 +8,7 @@ import {
   User as UserIcon, ArrowLeft, Mail, Phone, ExternalLink,
   Download, Loader2, Sparkles, ChevronRight
 } from 'lucide-react';
-import axios from 'axios';
+import apiClient from '@/lib/apiClient';
 import { auth } from '@/lib/firebaseConfig';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -219,10 +219,10 @@ export default function CandidateProfilePage() {
       try {
         const user = auth.currentUser;
         if (!user) return;
-        const token = await user.getIdToken();
-        const res = await axios.get(`http://localhost:5167/api/JobDetails/applicant-profile/${appId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        
+        // Token and Base URL are handled automatically by apiClient
+        const res = await apiClient.get(`/JobDetails/applicant-profile/${appId}`);
+        
         setData(normalizeProfile(res.data?.data ?? res.data));
       } catch (e) {
         console.error('Failed to load full profile', e);

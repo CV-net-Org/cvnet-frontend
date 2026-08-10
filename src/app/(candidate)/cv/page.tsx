@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { auth } from "@/lib/firebaseConfig";
+import apiClient from "@/lib/apiClient"; // Adjust relative path as needed
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -227,7 +228,7 @@ export default function CVPage() {
     "Memberships": useRef<HTMLDivElement>(null), "Social Links": useRef<HTMLDivElement>(null),
   };
 
-  const API_BASE = "http://localhost:5167/api/UserProfile";
+  const PYTHON_API_URL = process.env.NEXT_PUBLIC_PYTHON_API_URL || "http://localhost:8000";
 
   // ── Fetch ──
 
@@ -235,10 +236,10 @@ export default function CVPage() {
     try {
       const user = auth.currentUser;
       if (!user) return;
-      const token = await user.getIdToken();
-      const res = await axios.get(`${API_BASE}/full-profile?userId=${user.uid}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      
+      // apiClient handles the token and the base URL
+      const res = await apiClient.get(`/UserProfile/full-profile?userId=${user.uid}`);
+      
       if (res.data) {
         setActiveProfileId(res.data.activeProfileId || "");
         setMasterProfileId(res.data.masterProfileId || "");
@@ -278,10 +279,7 @@ export default function CVPage() {
     setIsLoading(true);
     try {
       const user = auth.currentUser;
-      const token = await user?.getIdToken();
-      await axios.post(`${API_BASE}/switch-profile`, { userId: user?.uid, profileId: newId }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await apiClient.post(`/UserProfile/switch-profile`, { userId: user?.uid, profileId: newId });
       await fetchCVData();
     } catch (err) { console.error(err); }
   };
@@ -290,10 +288,7 @@ export default function CVPage() {
     if (!masterProfileId || !activeProfileId) return;
     setIsCloning(true);
     try {
-      const token = await auth.currentUser?.getIdToken();
-      await axios.post(`${API_BASE}/clone-profile`,
-        { MasterProfileId: masterProfileId, TargetProfileId: activeProfileId },
-        { headers: { Authorization: `Bearer ${token}` } });
+      await apiClient.post(`/UserProfile/clone-profile`, { MasterProfileId: masterProfileId, TargetProfileId: activeProfileId });
       await fetchCVData();
     } catch (err) { console.error("Clone failed:", err); }
     finally { setIsCloning(false); }
@@ -332,14 +327,17 @@ export default function CVPage() {
     try {
       const user = auth.currentUser;
       if (!user) return;
-      const token = await user.getIdToken();
+      
       const fields = ["fullName", "phone", "address", "gpa", "portfolioUrl", "currentOrg", "currentPosition", "personalStatement", "aboutMe"];
       const promises = [];
       for (const f of fields) {
         if (profile[f] !== initialProfile[f]) {
-          promises.push(axios.put(`${API_BASE}/profile-update`,
-            { userId: user.uid, profileId: activeProfileId, field: f, value: profile[f] },
-            { headers: { Authorization: `Bearer ${token}` } }));
+          promises.push(apiClient.put(`/UserProfile/profile-update`, { 
+            userId: user.uid, 
+            profileId: activeProfileId, 
+            field: f, 
+            value: profile[f] 
+          }));
         }
       }
       await Promise.all(promises);
@@ -369,15 +367,15 @@ export default function CVPage() {
     }
     for (const curr of currItems) { if (String(curr.id).startsWith("temp-")) toAdd.push(curr); }
     try {
-      const token = await auth.currentUser?.getIdToken();
       for (const id of toDeleteIds) {
-        await axios.delete(`${API_BASE}/collection/${tableName}/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+        await apiClient.delete(`/UserProfile/collection/${tableName}/${id}`);
       }
       for (const item of toAdd) {
         const { id, profileId, profile_id, created_at, updated_at, ...rest } = item;
-        await axios.post(`${API_BASE}/collection/${tableName}`,
-          { profileId: activeProfileId, ...toSnakeCase(rest) },
-          { headers: { Authorization: `Bearer ${token}` } });
+        await apiClient.post(`/UserProfile/collection/${tableName}`, { 
+          profileId: activeProfileId, 
+          ...toSnakeCase(rest) 
+        });
       }
       await fetchCVData();
     } catch (err: any) {
@@ -393,11 +391,16 @@ export default function CVPage() {
     const fd = new FormData(); fd.append("file", file);
     try {
       const user = auth.currentUser;
-      const token = await user?.getIdToken();
-      const uploadRes = await axios.post("http://localhost:5167/api/CV/upload-cloudinary", fd, {
-        headers: { Authorization: `Bearer ${token}` },
+      
+      // 1. Upload using apiClient (handles token automatically)
+      const uploadRes = await apiClient.post("/CV/upload-cloudinary", fd);
+      
+      // 2. Process via Python using standard axios and your environment variable
+      await axios.post(`${PYTHON_API_URL}/process-pdf`, { 
+        userId: user?.uid, 
+        cvUrl: uploadRes.data.url 
       });
-      await axios.post("http://localhost:8000/process-pdf", { userId: user?.uid, cvUrl: uploadRes.data.url });
+      
       await fetchCVData();
     } catch (err) { console.error(err); }
     finally { setIsUploading(false); }
@@ -412,7 +415,11 @@ export default function CVPage() {
       const fd = new FormData();
       fd.append("user_id", user?.uid || "");
       fd.append("profile_url", linkedInUrl);
-      await axios.post("http://localhost:8000/sync-linkedin", fd, { headers: { "Content-Type": "multipart/form-data" } });
+      
+      await axios.post(`${PYTHON_API_URL}/sync-linkedin`, fd, { 
+        headers: { "Content-Type": "multipart/form-data" } 
+      });
+      
       await fetchCVData();
       setLinkedInUrl("");
     } catch (err) { console.error(err); }

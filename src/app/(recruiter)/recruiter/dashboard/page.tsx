@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import apiClient from '@/lib/apiClient';
 import {
   Search, Plus, TrendingUp, Users, Briefcase,
   Loader2, AlertCircle, ArrowRight, ArrowUpRight,
@@ -313,16 +313,8 @@ export default function RecruiterDashboardPage() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const token = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('cvnet_token='))
-          ?.split('=')[1];
-
-        if (!token) throw new Error('No authentication token found.');
-
-        const response = await axios.get('http://localhost:5167/api/CompanyDashboard', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        // Token and Base URL are automatically handled by apiClient
+        const response = await apiClient.get('/CompanyDashboard');
 
         setData(response.data);
       } catch (err: any) {
