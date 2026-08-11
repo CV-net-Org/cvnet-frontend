@@ -1,3 +1,5 @@
+//Candidate Dashboard Page
+
 "use client";
 
 import Link from "next/link";
@@ -224,9 +226,9 @@ export default function DashboardPage() {
   const loadTrackMeta = async (currentUser = auth.currentUser) => {
     try {
       if (!currentUser) return;
-      
+
       const res = await apiClient.get("/api/Dashboard/available-tracks");
-      
+
       setAvailableTracks(res.data || []);
       if (res.data?.length) {
         setTargetCategory(res.data[0].categoryName);
@@ -248,33 +250,33 @@ export default function DashboardPage() {
     if (!targetRole || !targetCategory) return;
     setIsLoading(true);
     try {
-      await apiClient.post("/api/Dashboard/roles", { 
-        jobRole: targetRole, 
-        category: targetCategory 
+      await apiClient.post("/api/Dashboard/roles", {
+        jobRole: targetRole,
+        category: targetCategory
       });
-      
+
       setShowAddTrack(false);
       fetchDashboardData();
-    } catch (e) { 
-      console.error(e); 
-      setIsLoading(false); 
+    } catch (e) {
+      console.error(e);
+      setIsLoading(false);
     }
   };
 
   const handleRemoveRole = async (force = false) => {
     try {
       const res = await apiClient.delete(`/api/Dashboard/roles/${activeProfileId}?force=${force}`);
-      
-      if (res.data?.isBlocked) { 
-        alert(res.data.message); 
-        setDeleteWarning(null); 
-        return; 
+
+      if (res.data?.isBlocked) {
+        alert(res.data.message);
+        setDeleteWarning(null);
+        return;
       }
-      if (res.data?.needsConfirmation && !force) { 
-        setDeleteWarning(res.data.message); 
-        return; 
+      if (res.data?.needsConfirmation && !force) {
+        setDeleteWarning(res.data.message);
+        return;
       }
-      
+
       setDeleteWarning(null);
       fetchDashboardData();
     } catch (e) { console.error(e); }
