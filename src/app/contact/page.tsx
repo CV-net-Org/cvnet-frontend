@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import MarketingNav from "@/components/MarketingNav";
+import ScrollToTop from "@/components/ScrollToTop";
 import {
   Mail,
   MessageSquare,
@@ -245,6 +246,7 @@ export default function ContactPage() {
           </div>
         </div>
       </footer>
+      <ScrollToTop />
     </div>
   );
 }

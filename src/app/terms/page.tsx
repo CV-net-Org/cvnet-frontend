@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import MarketingNav from "@/components/MarketingNav";
+import ScrollToTop from "@/components/ScrollToTop";
 
 export default function TermsOfServicePage() {
   const currentYear = new Date().getFullYear();
@@ -147,6 +148,7 @@ export default function TermsOfServicePage() {
           </div>
         </div>
       </footer>
+      <ScrollToTop />
     </div>
   );
 }
