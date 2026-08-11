@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import Image from "next/image";
 import MarketingNav from "@/components/MarketingNav";
 import {
@@ -258,7 +258,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-300 py-14 px-4 sm:px-6">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Image
@@ -278,7 +278,7 @@ export default function LandingPage() {
           <div>
             <h4 className="text-white font-semibold mb-4">Product</h4>
             <ul className="space-y-2 text-sm">
-              {["Features", "Integrations", "Changelog"].map((i) => (
+              {["Features"].map((i) => (
                 <li key={i}>
                   <Link
                     href="#"
@@ -291,26 +291,9 @@ export default function LandingPage() {
             </ul>
           </div>
           <div>
-            <h4 className="text-white font-semibold mb-4">Resources</h4>
-            <ul className="space-y-2 text-sm">
-              {["Documentation", "API Reference", "Blog", "Community"].map(
-                (i) => (
-                  <li key={i}>
-                    <Link
-                      href="#"
-                      className="text-slate-400 hover:text-white transition-colors"
-                    >
-                      {i}
-                    </Link>
-                  </li>
-                ),
-              )}
-            </ul>
-          </div>
-          <div>
             <h4 className="text-white font-semibold mb-4">Company</h4>
             <ul className="space-y-2 text-sm">
-              {["About", "Careers", "Legal", "Contact"].map((i) => (
+              {["About", "Contact"].map((i) => (
                 <li key={i}>
                   <Link
                     href="#"
@@ -324,7 +307,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="max-w-6xl mx-auto mt-10 pt-6 border-t border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500">
-          <p>&copy; 2024 CVNet Inc. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} CVNet Inc. All rights reserved.</p>
           <div className="flex gap-4">
             <Link href="#" className="hover:text-white transition-colors">
               Privacy Policy
