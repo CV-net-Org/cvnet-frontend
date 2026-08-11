@@ -314,7 +314,7 @@ export default function RecruiterDashboardPage() {
     const fetchDashboardData = async () => {
       try {
         // Token and Base URL are automatically handled by apiClient
-        const response = await apiClient.get('/CompanyDashboard');
+        const response = await apiClient.get('/api/CompanyDashboard');
 
         setData(response.data);
       } catch (err: any) {
