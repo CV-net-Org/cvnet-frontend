@@ -21,7 +21,7 @@ export default function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const publicRoutes = ["/login", "/signup", "/"];
+  const publicRoutes = ["/login", "/signup", "/", "/features", "/about", "/contact", "/privacy", "/terms"];
   const isPublicRoute = publicRoutes.includes(path);
 
   // 2. 🔥 FIX 2: THE KILL SWITCH FOR CORRUPT SESSIONS 🔥
