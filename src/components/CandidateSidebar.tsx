@@ -41,7 +41,7 @@ export default function CandidateSidebar() {
       
       if (user) {
         try {
-          const res = await apiClient.get(`/UserProfile/full-profile?userId=${user.uid}`);
+          const res = await apiClient.get(`/api/UserProfile/full-profile?userId=${user.uid}`);
           
           // Override the default name with the actual Postgres full_name
           if (res.data && res.data.fullName && res.data.fullName.trim() !== "") {

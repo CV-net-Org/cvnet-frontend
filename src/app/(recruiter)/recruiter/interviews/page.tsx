@@ -172,7 +172,7 @@ export default function InterviewsPage() {
   const fetchInterviews = async () => {
     try {
       // Token and Base URL are automatically handled by apiClient
-      const res = await apiClient.get('/interviews');
+      const res = await apiClient.get('/api/interviews');
       setCandidates(res.data);
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
@@ -181,7 +181,7 @@ export default function InterviewsPage() {
   const fetchActivePortals = async () => {
     setLoadingPortals(true);
     try {
-      const res = await apiClient.get('/interviews/portals');
+      const res = await apiClient.get('/api/interviews/portals');
       setActivePortals(res.data);
     } catch (e) { console.error(e); }
     finally { setLoadingPortals(false); }
@@ -189,7 +189,7 @@ export default function InterviewsPage() {
 
   const deletePortal = async (portalId: string) => {
     try {
-      await apiClient.delete(`/interviews/portals/${portalId}`);
+      await apiClient.delete(`/api/interviews/portals/${portalId}`);
       setActivePortals(prev => prev.filter(p => p.portalId !== portalId));
     } catch (e) { console.error(e); }
   };
@@ -205,7 +205,7 @@ export default function InterviewsPage() {
     if (!scheduleModal || !selectedDate) return;
     setActionLoading(true);
     try {
-      await apiClient.put(`/interviews/${scheduleModal.callId}/schedule`, {
+      await apiClient.put(`/api/interviews/${scheduleModal.callId}/schedule`, {
         interviewDate: new Date(selectedDate).toISOString()
       });
       setScheduleModal(null);
@@ -218,7 +218,7 @@ export default function InterviewsPage() {
     if (!rejectModal || !rejectReason) return;
     setActionLoading(true);
     try {
-      await apiClient.post(`/interviews/${rejectModal.callId}/reject`, {
+      await apiClient.post(`/api/interviews/${rejectModal.callId}/reject`, {
         reason: rejectReason
       });
       setRejectModal(null);
@@ -231,7 +231,7 @@ export default function InterviewsPage() {
     if (!selectedDateView || selectedJobsToShare.length === 0) return;
     setIsGenerating(true);
     try {
-      const res = await apiClient.post('/interviews/share-portal', {
+      const res = await apiClient.post('/api/interviews/share-portal', {
         interviewDate: new Date(selectedDateView).toISOString(),
         jobIds: selectedJobsToShare
       });

@@ -167,7 +167,7 @@ export default function CandidatesPage() {
       params.append('sortOrder', sortOrder);
       
       // Token and Base URL are automatically handled by apiClient
-      const res = await apiClient.get(`/candidates?${params}`);
+      const res = await apiClient.get(`/api/candidates?${params}`);
       
       setCandidates(res.data);
     } catch (err) {

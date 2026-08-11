@@ -54,7 +54,7 @@ export default function SkillGapPage() {
       if (!auth.currentUser) return;
       
       // Token and Base URL are automatically handled by apiClient
-      const endpoint = profileId ? `/SkillGap/analysis?profileId=${profileId}` : `/SkillGap/analysis`;
+      const endpoint = profileId ? `/api/SkillGap/analysis?profileId=${profileId}` : `/api/SkillGap/analysis`;
       const res = await apiClient.get(endpoint);
       
       setData(res.data);

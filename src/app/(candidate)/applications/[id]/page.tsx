@@ -74,7 +74,7 @@ export default function CandidateProfilePage() {
       try {
         if (!auth.currentUser) return;
 
-        const response = await apiClient.get(`/Application/${params.id}`);
+        const response = await apiClient.get(`/api/Application/${params.id}`);
         setData(response.data);
       } catch (error) {
         console.error("Failed to load application details", error);

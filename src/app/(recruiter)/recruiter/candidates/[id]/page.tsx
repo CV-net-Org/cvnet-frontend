@@ -221,7 +221,7 @@ export default function CandidateProfilePage() {
         if (!user) return;
         
         // Token and Base URL are handled automatically by apiClient
-        const res = await apiClient.get(`/JobDetails/applicant-profile/${appId}`);
+        const res = await apiClient.get(`/api/JobDetails/applicant-profile/${appId}`);
         
         setData(normalizeProfile(res.data?.data ?? res.data));
       } catch (e) {

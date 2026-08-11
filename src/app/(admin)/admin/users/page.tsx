@@ -23,7 +23,7 @@ export default function AdminUsersPage() {
   const fetchUsers = async () => {
     try {
       // 🚀 Token attached automatically via interceptor & relative to http://.../api
-      const res = await apiClient.get("/Admin/users");
+      const res = await apiClient.get("/api/Admin/users");
       setUsers(res.data);
     } catch (error) {
       console.error("Failed to fetch users", error);
@@ -46,7 +46,7 @@ export default function AdminUsersPage() {
     setProcessingUid(user.uid);
     try {
       // 🚀 Simplified POST request
-      await apiClient.post("/Admin/make-company", {
+      await apiClient.post("/api/Admin/make-company", {
         uid: user.uid,
         email: user.email,
         firstName: user.firstName,
