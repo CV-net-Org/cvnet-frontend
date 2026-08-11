@@ -168,7 +168,7 @@ export default function PostJobPage() {
   useEffect(() => {
     const fetchMeta = async (token: string) => {
       try {
-        const res = await apiClient.get('/CompanyJob/categories');
+        const res = await apiClient.get('/api/CompanyJob/categories');
         setCategories(res.data);
         if (res.data.length > 0) {
           setCategoryId(res.data[0].id);

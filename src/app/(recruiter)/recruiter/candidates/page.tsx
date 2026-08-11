@@ -145,10 +145,10 @@ export default function CandidatesPage() {
     try {
       const user = auth.currentUser;
       if (!user) return;
-      
+
       // Token and Base URL are automatically handled by apiClient
-      const res = await apiClient.get('/candidates/jobs');
-      
+      const res = await apiClient.get('/api/candidates/jobs');
+
       setJobs(res.data);
     } catch (err) {
       console.error('Failed to fetch jobs', err);
@@ -160,15 +160,15 @@ export default function CandidatesPage() {
     try {
       const user = auth.currentUser;
       if (!user) return;
-      
+
       const params = new URLSearchParams();
       if (selectedJobId) params.append('jobId', selectedJobId);
       if (search) params.append('search', search);
       params.append('sortOrder', sortOrder);
-      
+
       // Token and Base URL are automatically handled by apiClient
       const res = await apiClient.get(`/api/candidates?${params}`);
-      
+
       setCandidates(res.data);
     } catch (err) {
       console.error('Failed to fetch candidates', err);
@@ -248,7 +248,7 @@ export default function CandidatesPage() {
                     </select>
                     <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                   </div>
-                  
+
                   {/* Sort Order */}
                   <div className="relative shrink-0">
                     <select
@@ -415,7 +415,7 @@ export default function CandidatesPage() {
                               </Link>
                             </td>
                           </tr>
-                          
+
                           {/* Expanded Skills Row */}
                           {expandedAppId === c.appId && (
                             <tr className="bg-slate-50/50 border-b border-slate-100">
