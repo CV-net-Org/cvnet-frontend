@@ -281,7 +281,7 @@ export default function LandingPage() {
               {["Features"].map((i) => (
                 <li key={i}>
                   <Link
-                    href="#"
+                    href="/features"
                     className="text-slate-400 hover:text-white transition-colors"
                   >
                     {i}
@@ -293,16 +293,22 @@ export default function LandingPage() {
           <div>
             <h4 className="text-white font-semibold mb-4">Company</h4>
             <ul className="space-y-2 text-sm">
-              {["About", "Contact"].map((i) => (
-                <li key={i}>
-                  <Link
-                    href="#"
-                    className="text-slate-400 hover:text-white transition-colors"
-                  >
-                    {i}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link
+                  href="/about"
+                  className="text-slate-400 hover:text-white transition-colors"
+                >
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/contact"
+                  className="text-slate-400 hover:text-white transition-colors"
+                >
+                  Contact
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
