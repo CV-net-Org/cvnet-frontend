@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // 3. Memory-Safe Idle Cookie Scanner Loop
   useEffect(() => {
-    const publicRoutes = ["/login", "/signup", "/", "/features", "/about", "/contact"];
+    const publicRoutes = ["/login", "/signup", "/", "/features", "/about", "/contact", "/privacy", "/terms"];
     const isPublicRoute = publicRoutes.includes(pathname);
 
     if (isPublicRoute) return;

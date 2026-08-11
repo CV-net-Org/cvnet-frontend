@@ -98,9 +98,6 @@ export default function LandingPage() {
                   For Recruiters
                 </Link>
               </div>
-              <p className="text-sm text-slate-400 mt-4">
-                No credit card required. 14-day free trial.
-              </p>
             </div>
             <div className="flex-1 flex flex-col items-center lg:items-end gap-4">
               <div className="bg-white rounded-2xl shadow-xl p-6 w-72 border border-slate-100">
@@ -315,10 +312,10 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto mt-10 pt-6 border-t border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500">
           <p>&copy; {new Date().getFullYear()} CVNet Inc. All rights reserved.</p>
           <div className="flex gap-4">
-            <Link href="#" className="hover:text-white transition-colors">
+            <Link href="/privacy" className="hover:text-white transition-colors">
               Privacy Policy
             </Link>
-            <Link href="#" className="hover:text-white transition-colors">
+            <Link href="/terms" className="hover:text-white transition-colors">
               Terms of Service
             </Link>
           </div>
