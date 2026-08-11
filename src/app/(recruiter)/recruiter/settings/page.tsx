@@ -142,7 +142,7 @@ export default function RecruiterSettingsPage() {
         setFullName(user.displayName || '');
         setEmail(user.email || '');
         try {
-          const res = await apiClient.get('/CompanyProfile');
+          const res = await apiClient.get('/api/CompanyProfile');
           if (res.data) {
             setCompanyName(res.data.name || '');
             setWebsiteUrl(res.data.siteLink || '');
@@ -164,7 +164,7 @@ export default function RecruiterSettingsPage() {
     setIsSaving(true); setStatus({ type: 'success', text: null });
     const fd = new FormData(); fd.append('file', file);
     try {
-      const res = await apiClient.post('/CompanyProfile/upload-logo', fd);
+      const res = await apiClient.post('/api/CompanyProfile/upload-logo', fd);
       if (res.data.status === 'success') {
         await updateProfile(currentUser, { photoURL: res.data.logoUrl });
         setProfileImageUrl(res.data.logoUrl);
@@ -191,7 +191,7 @@ export default function RecruiterSettingsPage() {
     if (!currentUser) return;
     setIsSaving(true); setStatus({ type: 'success', text: null });
     try {
-      await apiClient.put('/CompanyProfile/update', {
+      await apiClient.put('/api/CompanyProfile/update', {
         name: companyName, description: companyDescription,
         siteLink: websiteUrl, hrContactPhone, employeeCount: 'SMALL_2_10',
       });
