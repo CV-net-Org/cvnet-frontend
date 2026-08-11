@@ -125,7 +125,7 @@ export default function PostJobPage() {
       let token = await auth.currentUser?.getIdToken();
       if (!token) { const m = document.cookie.match(/(?:^|; )cvnet_token=([^;]*)/); token = m?.[1]; }
       if (!token) { alert('Authentication lost. Please reload.'); setIsLoading(false); return; }
-      await apiClient.post('/CompanyJob/create', {
+      await apiClient.post('/api/CompanyJob/create', {
         categoryId, jobTitle, employmentType, workplaceType,
         location: location || null, openings, description: description || null,
         responsibilities: responsibilities || null, salaryRange: salaryRange || null,
