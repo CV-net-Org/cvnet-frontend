@@ -49,7 +49,7 @@ export const authService = {
       console.log(`[DEBUG-FRONTEND] Sending POST request to /Auth/login`);
       
       // Token header is handled by apiClient; idToken remains in the body
-      const response = await apiClient.post("/Auth/login", { idToken });
+      const response = await apiClient.post("/api/Auth/login", { idToken });
       
       console.log(`[DEBUG-FRONTEND] Backend accepted token. Response:`, response.data);
       return response;
