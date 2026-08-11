@@ -172,7 +172,7 @@ function FullProfileModal({ appId, jobId, onClose }: { appId: string; jobId: str
         if (!user) return;
         
         // Token and Base URL are handled automatically by apiClient
-        const res = await apiClient.get(`/JobDetails/applicant-profile/${appId}`);
+        const res = await apiClient.get(`/api/JobDetails/applicant-profile/${appId}`);
         
         setData(normalizeProfile(res.data?.data ?? res.data));
       } catch (e) {
@@ -626,7 +626,7 @@ export default function JobDetailPage() {
       const user = auth.currentUser;
       if (!user) return;
       
-      const res = await apiClient.get(`/JobDetails/${jobId}`);
+      const res = await apiClient.get(`/api/JobDetails/${jobId}`);
       
       setJob(res.data.details);
       setApplicants(res.data.applicants);
@@ -645,7 +645,7 @@ export default function JobDetailPage() {
   const handleCloseJob = async () => {
     if (!confirm("Are you sure? This will close the job and reject all pending applicants.")) return;
     try {
-      await apiClient.post(`/JobDetails/${jobId}/close`, {});
+      await apiClient.post(`/api/JobDetails/${jobId}/close`, {});
       alert("Job Closed successfully.");
       fetchJobData();
       setIsStatusOpen(false);
@@ -654,7 +654,7 @@ export default function JobDetailPage() {
 
   const handleRepostJob = async () => {
     try {
-      const res = await apiClient.post(`/JobDetails/${jobId}/repost`, {});
+      const res = await apiClient.post(`/api/JobDetails/${jobId}/repost`, {});
       alert("Job Reposted successfully!");
       router.push(`/recruiter/jobs/${res.data.newJobId}`);
     } catch { alert("Error reposting job."); }
@@ -664,7 +664,7 @@ export default function JobDetailPage() {
     try {
       const endpoint = action === 'interview' ? 'interview' : 'reject';
       const payload = action === 'interview' ? { message: "Invitation to interview" } : { reason: "Position closed or candidate mismatch" };
-      await apiClient.post(`/JobDetails/applicant/${appId}/${endpoint}`, payload);
+      await apiClient.post(`/api/JobDetails/applicant/${appId}/${endpoint}`, payload);
       fetchJobData();
     } catch { alert(`Error processing ${action}`); }
   };

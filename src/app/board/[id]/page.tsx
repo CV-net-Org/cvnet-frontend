@@ -118,7 +118,7 @@ function FullProfileModal({ appId, portalId, pin, onClose }: { appId: string; po
     const fetchProfile = async () => {
       try {
         // 🔒 ZERO TRUST: We pass the PIN to fetch the profile.
-        const res = await apiClient.get(`/interviews/shared/${portalId}/applicant/${appId}`, {
+        const res = await apiClient.get(`/api/interviews/shared/${portalId}/applicant/${appId}`, {
           headers: { 'X-Portal-PIN': pin }
         });
         setData(normalizeProfile(res.data?.data ?? res.data));
@@ -554,7 +554,7 @@ export default function SecureJudgeBoardPortal() {
     setAuthError('');
     
     try {
-      const res = await apiClient.get(`/interviews/shared/${portalId}/data`, {
+        const res = await apiClient.get(`/api/interviews/shared/${portalId}/data`, {
         headers: { 'X-Portal-PIN': password }
       });
       

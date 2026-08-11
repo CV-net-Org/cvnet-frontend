@@ -238,7 +238,7 @@ export default function CVPage() {
       if (!user) return;
       
       // apiClient handles the token and the base URL
-      const res = await apiClient.get(`/UserProfile/full-profile?userId=${user.uid}`);
+      const res = await apiClient.get(`/api/UserProfile/full-profile?userId=${user.uid}`);
       
       if (res.data) {
         setActiveProfileId(res.data.activeProfileId || "");
@@ -279,7 +279,7 @@ export default function CVPage() {
     setIsLoading(true);
     try {
       const user = auth.currentUser;
-      await apiClient.post(`/UserProfile/switch-profile`, { userId: user?.uid, profileId: newId });
+      await apiClient.post(`/api/UserProfile/switch-profile`, { userId: user?.uid, profileId: newId });
       await fetchCVData();
     } catch (err) { console.error(err); }
   };
@@ -288,7 +288,7 @@ export default function CVPage() {
     if (!masterProfileId || !activeProfileId) return;
     setIsCloning(true);
     try {
-      await apiClient.post(`/UserProfile/clone-profile`, { MasterProfileId: masterProfileId, TargetProfileId: activeProfileId });
+      await apiClient.post(`/api/UserProfile/clone-profile`, { MasterProfileId: masterProfileId, TargetProfileId: activeProfileId });
       await fetchCVData();
     } catch (err) { console.error("Clone failed:", err); }
     finally { setIsCloning(false); }
@@ -332,7 +332,7 @@ export default function CVPage() {
       const promises = [];
       for (const f of fields) {
         if (profile[f] !== initialProfile[f]) {
-          promises.push(apiClient.put(`/UserProfile/profile-update`, { 
+          promises.push(apiClient.put(`/api/UserProfile/profile-update`, { 
             userId: user.uid, 
             profileId: activeProfileId, 
             field: f, 
@@ -368,11 +368,11 @@ export default function CVPage() {
     for (const curr of currItems) { if (String(curr.id).startsWith("temp-")) toAdd.push(curr); }
     try {
       for (const id of toDeleteIds) {
-        await apiClient.delete(`/UserProfile/collection/${tableName}/${id}`);
+        await apiClient.delete(`/api/UserProfile/collection/${tableName}/${id}`);
       }
       for (const item of toAdd) {
         const { id, profileId, profile_id, created_at, updated_at, ...rest } = item;
-        await apiClient.post(`/UserProfile/collection/${tableName}`, { 
+        await apiClient.post(`/api/UserProfile/collection/${tableName}`, { 
           profileId: activeProfileId, 
           ...toSnakeCase(rest) 
         });
@@ -393,7 +393,7 @@ export default function CVPage() {
       const user = auth.currentUser;
       
       // 1. Upload using apiClient (handles token automatically)
-      const uploadRes = await apiClient.post("/CV/upload-cloudinary", fd);
+      const uploadRes = await apiClient.post("/api/CV/upload-cloudinary", fd);
       
       // 2. Process via Python using standard axios and your environment variable
       await axios.post(`${PYTHON_API_URL}/process-pdf`, { 

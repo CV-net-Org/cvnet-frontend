@@ -102,7 +102,7 @@ export default function SettingsPage() {
       }
 
       // 2. Transmit standard payload to .NET (Backend handles the NoSQL splitting)
-      await apiClient.put("/Profile/update-details", {
+      await apiClient.put("/api/Profile/update-details", {
         fullName: fullName,
         email: email
       });
@@ -141,7 +141,7 @@ export default function SettingsPage() {
     multipartForm.append("file", file);
 
     try {
-      const response = await apiClient.post("/Profile/upload-image", multipartForm);
+      const response = await apiClient.post("/api/Profile/upload-image", multipartForm);
 
       if (response.data.status === "success") {
         const structuralCloudinaryUrl = response.data.imageUrl;
@@ -210,7 +210,7 @@ export default function SettingsPage() {
 
     setIsLoading(true);
     try {
-      await apiClient.delete("/User/delete-account");
+      await apiClient.delete("/api/User/delete-account");
 
       await signOut(auth);
       window.location.href = "/login";

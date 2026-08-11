@@ -179,7 +179,7 @@ export default function DashboardPage() {
       // 🚀 Token and Base URL handled automatically by apiClient
 
       // First call — get profiles list
-      const res = await apiClient.get("/Dashboard/summary", {
+      const res = await apiClient.get("/api/Dashboard/summary", {
         ...(profileId ? { params: { profileId } } : {}),
       });
 
@@ -200,7 +200,7 @@ export default function DashboardPage() {
       let summaryData = res.data;
       if (effectivePid && effectivePid !== apiActiveId && !profileId) {
         // Second call — re-fetch if needed
-        const reRes = await apiClient.get("/Dashboard/summary", {
+        const reRes = await apiClient.get("/api/Dashboard/summary", {
           params: { profileId: effectivePid },
         });
         summaryData = reRes.data;
@@ -211,7 +211,7 @@ export default function DashboardPage() {
       if (effectivePid) {
         setActiveProfileId(effectivePid);
         // Third call — readiness matrix
-        const mx = await apiClient.get("/Dashboard/readiness-matrix", {
+        const mx = await apiClient.get("/api/Dashboard/readiness-matrix", {
           params: { profileId: effectivePid },
         });
         setSkillBreakdown(mx.data?.breakdown || []);
@@ -225,7 +225,7 @@ export default function DashboardPage() {
     try {
       if (!currentUser) return;
       
-      const res = await apiClient.get("/Dashboard/available-tracks");
+      const res = await apiClient.get("/api/Dashboard/available-tracks");
       
       setAvailableTracks(res.data || []);
       if (res.data?.length) {
@@ -248,7 +248,7 @@ export default function DashboardPage() {
     if (!targetRole || !targetCategory) return;
     setIsLoading(true);
     try {
-      await apiClient.post("/Dashboard/roles", { 
+      await apiClient.post("/api/Dashboard/roles", { 
         jobRole: targetRole, 
         category: targetCategory 
       });
@@ -263,7 +263,7 @@ export default function DashboardPage() {
 
   const handleRemoveRole = async (force = false) => {
     try {
-      const res = await apiClient.delete(`/Dashboard/roles/${activeProfileId}?force=${force}`);
+      const res = await apiClient.delete(`/api/Dashboard/roles/${activeProfileId}?force=${force}`);
       
       if (res.data?.isBlocked) { 
         alert(res.data.message); 

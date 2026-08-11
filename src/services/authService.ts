@@ -17,7 +17,7 @@ export const authService = {
         displayName: `${firstName} ${lastName}`.trim()
       });
       
-      return await apiClient.post("/Auth/signup", {
+      return await apiClient.post("/api/Auth/signup", {
         uid: userCredential.user.uid,
         email: email,
         firstName: firstName, 
@@ -46,10 +46,12 @@ export const authService = {
     console.log(`[DEBUG-FRONTEND] Firebase auth successful. Token snippet: ${idToken.substring(0, 15)}...`);
     
     try {
-      console.log(`[DEBUG-FRONTEND] Sending POST request to /Auth/login`);
+      console.log(`[DEBUG-FRONTEND] Sending POST request to api/Auth/login`);
       
       // Token header is handled by apiClient; idToken remains in the body
-      const response = await apiClient.post("/Auth/login", { idToken });
+      const response = await apiClient.post("/api/Auth/login", { idToken });
+      //use bellow one in the development
+      //const response = await apiClient.post("Auth/login", { idToken });
       
       console.log(`[DEBUG-FRONTEND] Backend accepted token. Response:`, response.data);
       return response;
@@ -73,9 +75,9 @@ export const authService = {
     console.log(`[DEBUG-FRONTEND] Google auth successful. Token snippet: ${idToken.substring(0, 15)}...`);
 
     try {
-      console.log(`[DEBUG-FRONTEND] Sending POST request to /Auth/login`);
+      console.log(`[DEBUG-FRONTEND] Sending POST request to api/Auth/login`);
       
-      const response = await apiClient.post("/Auth/login", { 
+      const response = await apiClient.post("/api/Auth/login", { 
         idToken,
         agreement: agreement || "Agreed" 
       });
