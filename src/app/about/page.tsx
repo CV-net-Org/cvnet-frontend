@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import MarketingNav from "@/components/MarketingNav";
+import ScrollToTop from "@/components/ScrollToTop";
 import {
   Lightbulb,
   ShieldCheck,
@@ -192,6 +193,7 @@ export default function AboutPage() {
           </div>
         </div>
       </footer>
+      <ScrollToTop />
     </div>
   );
 }

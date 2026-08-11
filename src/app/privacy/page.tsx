@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import MarketingNav from "@/components/MarketingNav";
+import ScrollToTop from "@/components/ScrollToTop";
 
 export default function PrivacyPolicyPage() {
   const currentYear = new Date().getFullYear();
@@ -156,6 +157,7 @@ export default function PrivacyPolicyPage() {
           </div>
         </div>
       </footer>
+      <ScrollToTop />
     </div>
   );
 }
