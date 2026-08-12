@@ -20,6 +20,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (saved === 'dark') setIsDark(true);
   }, []);
 
+  useEffect(() => {
+    // Apply background color to :root / body to prevent flash or white overscroll
+    if (isDark) {
+      document.documentElement.style.backgroundColor = '#020617'; // slate-950
+      document.body.style.backgroundColor = '#020617';
+    } else {
+      document.documentElement.style.backgroundColor = '#f8fafc'; // slate-50
+      document.body.style.backgroundColor = '#f8fafc';
+    }
+  }, [isDark]);
+
   const toggleTheme = () => {
     setIsDark(prev => {
       const next = !prev;
