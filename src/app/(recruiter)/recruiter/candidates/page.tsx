@@ -58,10 +58,11 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function ScoreBar({ score }: { score: number }) {
+  const { isDark } = useTheme();
   const color = score >= 70 ? '#16a34a' : score >= 50 ? '#2563eb' : score >= 30 ? '#d97706' : '#dc2626';
   return (
     <div className="flex items-center gap-2">
-      <div className="w-20 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+      <div className={`w-20 h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-slate-700' : 'bg-slate-200'}`}>
         <div className="h-full rounded-full" style={{ width: `${score}%`, backgroundColor: color }} />
       </div>
       <span className="text-sm font-black tabular-nums" style={{ color }}>{score}%</span>

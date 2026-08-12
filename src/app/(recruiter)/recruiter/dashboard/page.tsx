@@ -57,10 +57,11 @@ function Avatar({ name }: { name: string }) {
 }
 
 function ScoreBar({ score }: { score: number }) {
+  const { isDark } = useTheme();
   const color = score >= 80 ? '#16a34a' : score >= 60 ? '#2563eb' : score >= 40 ? '#d97706' : '#dc2626';
   return (
     <div className="flex items-center gap-2.5">
-      <div className="flex-1 h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+      <div className={`flex-1 h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}>
         <div className="h-full rounded-full transition-all duration-700" style={{ width: `${score}%`, backgroundColor: color }} />
       </div>
       <span className="text-xs font-semibold tabular-nums" style={{ color, minWidth: '32px', textAlign: 'right' }}>{score}%</span>
