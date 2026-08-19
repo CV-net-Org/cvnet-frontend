@@ -1,10 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, ShieldAlert, Briefcase, LogOut } from "lucide-react"; // ✅ Added LogOut icon
-import axios from "axios";
+import { Loader2, ShieldAlert, Briefcase } from "lucide-react";
 import { auth } from "@/lib/firebaseConfig";
-import { signOut } from "firebase/auth"; // ✅ Added Firebase signOut
 import apiClient from "@/lib/apiClient";
 
 type UserRecord = {
@@ -62,82 +60,96 @@ export default function AdminUsersPage() {
     }
   };
 
-  // ✅ NEW: Logout Handler
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      window.location.href = "/login"; // Redirect to login page
-    } catch (error) {
-      console.error("Failed to log out", error);
-    }
-  };
-
   if (isLoading) return <div className="flex justify-center mt-20"><Loader2 className="animate-spin text-blue-600" size={40} /></div>;
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div className="px-4 py-6 sm:px-6 lg:p-8 max-w-6xl mx-auto">
       
-      {/* ✅ UPDATED: Header area now includes the Log Out button */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-slate-900 text-white rounded-xl flex items-center justify-center">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8">
+        <div className="flex items-start sm:items-center gap-3">
+          <div className="w-11 h-11 sm:w-12 sm:h-12 bg-slate-900 text-white rounded-xl flex items-center justify-center shrink-0">
             <ShieldAlert size={24} />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-slate-900">Admin Command Center</h1>
-            <p className="text-sm font-medium text-slate-500">Manage user roles and platform access.</p>
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900">Admin Command Center</h1>
+            <p className="text-sm font-medium text-slate-500 max-w-xl">Manage user roles and platform access.</p>
           </div>
         </div>
 
-        {/* Log Out Button */}
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-2 bg-white border border-slate-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 text-slate-600 px-4 py-2.5 rounded-xl text-sm font-bold transition-colors shadow-sm"
-        >
-          <LogOut size={16} />
-          Log Out
-        </button>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-slate-50 border-b border-slate-200 text-left">
-              <th className="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest">User Details</th>
-              <th className="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest">Current Role</th>
-              <th className="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {users.map((u) => (
-              <tr key={u.uid} className="hover:bg-slate-50 transition-colors">
-                <td className="px-6 py-4">
-                  <p className="font-bold text-slate-900">{u.firstName} {u.lastName}</p>
-                  <p className="text-xs text-slate-500">{u.email}</p>
-                </td>
-                <td className="px-6 py-4">
-                  <span className={`px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-wider ${
-                    u.role === "company" ? "bg-indigo-100 text-indigo-700" : u.role === "admin" ? "bg-red-100 text-red-700" : "bg-emerald-100 text-emerald-700"
-                  }`}>
-                    {u.role || "candidate"}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-right">
-                  {u.role === "candidate" && (
-                    <button
-                      onClick={() => handleMakeCompany(u)}
-                      disabled={processingUid === u.uid}
-                      className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors"
-                    >
-                      {processingUid === u.uid ? <Loader2 size={14} className="animate-spin" /> : <Briefcase size={14} />}
-                      Convert to Company
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="space-y-4">
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden hidden md:block">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[720px]">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200 text-left">
+                  <th className="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest">User Details</th>
+                  <th className="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest">Current Role</th>
+                  <th className="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {users.map((u) => (
+                  <tr key={u.uid} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-4">
+                      <p className="font-bold text-slate-900">{u.firstName} {u.lastName}</p>
+                      <p className="text-xs text-slate-500 break-all">{u.email}</p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-wider ${
+                        u.role === "company" ? "bg-indigo-100 text-indigo-700" : u.role === "admin" ? "bg-red-100 text-red-700" : "bg-emerald-100 text-emerald-700"
+                      }`}>
+                        {u.role || "candidate"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      {u.role === "candidate" && (
+                        <button
+                          onClick={() => handleMakeCompany(u)}
+                          disabled={processingUid === u.uid}
+                          className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors"
+                        >
+                          {processingUid === u.uid ? <Loader2 size={14} className="animate-spin" /> : <Briefcase size={14} />}
+                          Convert to Company
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="space-y-3 md:hidden">
+          {users.map((u) => (
+            <div key={u.uid} className="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 space-y-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-bold text-slate-900 truncate">{u.firstName} {u.lastName}</p>
+                  <p className="text-xs text-slate-500 break-all">{u.email}</p>
+                </div>
+                <span className={`shrink-0 px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-wider ${
+                  u.role === "company" ? "bg-indigo-100 text-indigo-700" : u.role === "admin" ? "bg-red-100 text-red-700" : "bg-emerald-100 text-emerald-700"
+                }`}>
+                  {u.role || "candidate"}
+                </span>
+              </div>
+
+              {u.role === "candidate" && (
+                <button
+                  onClick={() => handleMakeCompany(u)}
+                  disabled={processingUid === u.uid}
+                  className="inline-flex w-full items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white px-4 py-3 rounded-xl text-sm font-bold transition-colors"
+                >
+                  {processingUid === u.uid ? <Loader2 size={14} className="animate-spin" /> : <Briefcase size={14} />}
+                  Convert to Company
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
