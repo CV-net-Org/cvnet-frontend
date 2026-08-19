@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Loader2, ShieldAlert, Briefcase } from "lucide-react";
-import axios from "axios";
 import { auth } from "@/lib/firebaseConfig";
+import apiClient from "@/lib/apiClient";
 
 type UserRecord = {
   uid: string;
@@ -20,10 +20,8 @@ export default function AdminUsersPage() {
 
   const fetchUsers = async () => {
     try {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await axios.get("http://localhost:5167/api/Admin/users", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      // 🚀 Token attached automatically via interceptor & relative to http://.../api
+      const res = await apiClient.get("/api/Admin/users");
       setUsers(res.data);
     } catch (error) {
       console.error("Failed to fetch users", error);
@@ -45,13 +43,13 @@ export default function AdminUsersPage() {
 
     setProcessingUid(user.uid);
     try {
-      const token = await auth.currentUser?.getIdToken();
-      await axios.post("http://localhost:5167/api/Admin/make-company", {
+      // 🚀 Simplified POST request
+      await apiClient.post("/api/Admin/make-company", {
         uid: user.uid,
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName
-      }, { headers: { Authorization: `Bearer ${token}` } });
+      });
       
       await fetchUsers(); // Refresh list after success
     } catch (error) {

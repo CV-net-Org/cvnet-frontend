@@ -13,11 +13,15 @@ import {
   LogOut,
   Menu,
   X,
+  Search,
+  Bell,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { auth } from "@/lib/firebaseConfig";
 import { onAuthStateChanged, signOut, User as FirebaseUser } from "firebase/auth";
-import axios from "axios";
-
+import apiClient from "@/lib/apiClient";
+import { useTheme } from "@/context/ThemeContext";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/cv", label: "My CV", icon: FileText },
@@ -30,9 +34,11 @@ export default function CandidateSidebar() {
   const router = useRouter();
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const { isDark, toggleTheme } = useTheme();
   
   // State to hold the name strictly from the PostgreSQL database
-  const [dbFullName, setDbFullName] = useState<string>("Niranga Nayanajith"); 
+
+  const [dbFullName, setDbFullName] = useState<string>("Niranga Nayanajith");
 
   // Sync the sidebar with the real Firebase User AND PostgreSQL
   useEffect(() => {
@@ -41,12 +47,7 @@ export default function CandidateSidebar() {
       
       if (user) {
         try {
-          const token = await user.getIdToken();
-          
-          // Fetch the SQL profile row using your existing UserProfileController
-          const res = await axios.get(`http://localhost:5167/api/UserProfile/full-profile?userId=${user.uid}`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
+          const res = await apiClient.get(`/api/UserProfile/full-profile?userId=${user.uid}`);
           
           // Override the default name with the actual Postgres full_name
           if (res.data && res.data.fullName && res.data.fullName.trim() !== "") {
@@ -100,7 +101,7 @@ export default function CandidateSidebar() {
   return (
     <>
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 z-40 shadow-sm">
+      <div className={`lg:hidden fixed top-0 left-0 right-0 h-16 border-b flex items-center justify-between px-4 z-40 shadow-sm ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
         <div className="flex items-center gap-3">
           <Image
             src="/logo.jpeg"
@@ -109,15 +110,26 @@ export default function CandidateSidebar() {
             height={32}
             className="rounded-lg object-cover"
           />
-          <span className="text-slate-900 font-bold text-sm tracking-tight">CVNet</span>
+          <span className={`font-bold text-sm tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>CVNet</span>
         </div>
-        <button type="button" 
-          onClick={toggleSidebar}
-          aria-label="Toggle menu"
-          className="p-2 text-slate-600 hover:text-slate-900 transition-colors"
-        >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        <div className="flex items-center gap-1.5">
+          <Link href="/applications"
+            className={`w-9 h-9 flex items-center justify-center rounded-xl border ${isDark ? 'bg-slate-800 border-slate-700 text-slate-400' : 'bg-white border-slate-200 text-slate-500'}`}>
+            <Search size={15} />
+          </Link>
+          <button type="button" aria-label="Notifications"
+            className={`relative w-9 h-9 flex items-center justify-center rounded-xl border transition-colors ${isDark ? 'bg-slate-800 border-slate-700 text-slate-400 hover:text-slate-200 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-700 hover:bg-slate-50'}`}>
+            <Bell size={15} />
+            <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-red-500 border border-white" />
+          </button>
+          <button type="button" 
+            onClick={toggleSidebar}
+            aria-label="Toggle menu"
+            className={`p-1 ml-1 transition-colors ${isDark ? 'text-slate-400 hover:text-slate-200' : 'text-slate-600 hover:text-slate-900'}`}
+          >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {/* Backdrop for mobile */}
@@ -130,12 +142,12 @@ export default function CandidateSidebar() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 h-screen w-64 flex flex-col z-50 bg-white border-r border-slate-200 transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed left-0 top-0 h-screen w-64 flex flex-col z-50 border-r transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        } ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}
       >
         {/* Logo (Desktop only) */}
-        <div className="hidden lg:flex items-center gap-3 px-6 py-6 border-b border-slate-200">
+        <div className={`hidden lg:flex items-center gap-3 px-6 py-6 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
           <Image
             src="/logo.jpeg"
             alt="CVNet Logo"
@@ -144,8 +156,8 @@ export default function CandidateSidebar() {
             className="rounded-xl object-cover shadow-sm"
           />
           <div>
-            <p className="text-slate-900 font-black text-lg leading-tight tracking-tight">CVNet</p>
-            <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Candidate</p>
+            <p className={`font-black text-lg leading-tight tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>CVNet</p>
+            <p className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>Candidate</p>
           </div>
         </div>
 
@@ -161,8 +173,8 @@ export default function CandidateSidebar() {
                     onClick={() => setIsOpen(false)}
                     className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold transition-all ${
                       isActive
-                        ? "bg-blue-50 text-blue-700"
-                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                        ? (isDark ? "bg-slate-800 text-blue-400" : "bg-blue-50 text-blue-700")
+                        : (isDark ? "text-slate-400 hover:bg-slate-800 hover:text-slate-200" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900")
                     }`}
                   >
                     <Icon size={18} />
@@ -175,15 +187,34 @@ export default function CandidateSidebar() {
         </nav>
 
         {/* Bottom Section */}
-        <div className="mt-auto border-t border-slate-200 p-4 space-y-2 bg-slate-50/50">
+        <div className={`mt-auto border-t p-4 space-y-2 ${isDark ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-slate-50/50'}`}>
           
+          {/* Dark Mode Toggle */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className={`w-full flex items-center justify-between px-3 py-3 rounded-xl text-sm font-bold transition-all ${
+              isDark
+                ? "text-slate-400 hover:bg-slate-800 hover:text-white"
+                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              {isDark ? <Moon size={18} /> : <Sun size={18} />}
+              <span>{isDark ? "Dark Mode" : "Light Mode"}</span>
+            </div>
+            <div className={`w-8 h-4 rounded-full p-0.5 transition-colors ${isDark ? 'bg-blue-500' : 'bg-slate-300'}`}>
+              <div className={`w-3 h-3 rounded-full bg-white transition-transform ${isDark ? 'translate-x-4' : 'translate-x-0'}`} />
+            </div>
+          </button>
+
           <Link
             href="/settings"
             onClick={() => setIsOpen(false)}
             className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold transition-all ${
               pathname === "/settings"
-                ? "bg-slate-100 text-blue-600"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                ? (isDark ? "bg-slate-800 text-blue-400" : "bg-slate-100 text-blue-600")
+                : (isDark ? "text-slate-400 hover:bg-slate-800 hover:text-slate-200" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900")
             }`}
           >
             <Settings size={18} />
@@ -193,19 +224,19 @@ export default function CandidateSidebar() {
           {/* ✅ LOGOUT BUTTON */}
           <button type="button"
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-slate-600 hover:bg-rose-50 hover:text-rose-600 transition-all mb-2"
+            className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold transition-all mb-2 ${isDark ? 'text-slate-400 hover:bg-rose-900/30 hover:text-rose-400' : 'text-slate-600 hover:bg-rose-50 hover:text-rose-600'}`}
           >
             <LogOut size={18} />
             Logout
           </button>
 
           {/* DYNAMIC USER PROFILE */}
-          <div className="flex items-center gap-3 px-2 py-3 bg-white rounded-2xl border border-slate-200 mt-2 shadow-sm">
+          <div className={`flex items-center gap-3 px-2 py-3 rounded-2xl border mt-2 shadow-sm ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
             {profileImageUrl ? (
               <img 
                 src={profileImageUrl} 
                 alt="Avatar" 
-                className="w-10 h-10 rounded-xl object-cover shadow-inner border border-slate-100"
+                className={`w-10 h-10 rounded-xl object-cover shadow-inner border ${isDark ? 'border-slate-700' : 'border-slate-100'}`}
               />
             ) : (
               <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-sm shadow-inner">
@@ -213,8 +244,8 @@ export default function CandidateSidebar() {
               </div>
             )}
             <div className="min-w-0">
-              <p className="text-slate-900 text-xs font-black truncate leading-tight">{dbFullName}</p>
-              <p className="text-slate-500 text-[10px] font-bold uppercase truncate">Candidate Account</p>
+              <p className={`text-xs font-black truncate leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{dbFullName}</p>
+              <p className={`text-[10px] font-bold uppercase truncate ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Candidate Account</p>
             </div>
           </div>
         </div>

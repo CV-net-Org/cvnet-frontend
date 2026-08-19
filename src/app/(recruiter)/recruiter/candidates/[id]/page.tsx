@@ -8,8 +8,9 @@ import {
   User as UserIcon, ArrowLeft, Mail, Phone, ExternalLink,
   Download, Loader2, Sparkles, ChevronRight
 } from 'lucide-react';
-import axios from 'axios';
+import apiClient from '@/lib/apiClient';
 import { auth } from '@/lib/firebaseConfig';
+import { useTheme } from '@/context/ThemeContext';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -30,6 +31,16 @@ const formatMonthYear = (dateString?: string) => {
     if (isNaN(d.getTime())) return dateString;
     return new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' }).format(d);
   } catch { return dateString; }
+};
+const formatExternalUrl = (url?: string) => {
+  if (!url) return undefined;
+  const trimmed = url.trim();
+  // If it already has http:// or https://, return it as is
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return trimmed;
+  }
+  // Otherwise, force it to be an absolute URL
+  return `https://${trimmed}`;
 };
 
 const asArray = <T,>(v: T | T[] | null | undefined): T[] => {
@@ -122,8 +133,9 @@ function ScoreRing({ score, label, subLabel, color, trackColor }: ScoreRingProps
 // ─── Section label ────────────────────────────────────────────────────────────
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
+  const { isDark } = useTheme();
   return (
-    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">{children}</p>
+    <p className={`text-[10px] font-bold uppercase tracking-widest mb-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{children}</p>
   );
 }
 
@@ -136,18 +148,19 @@ function TimelineItem({
   icon: React.ElementType; iconBg: string; iconColor: string;
   title: string; subtitle?: string; meta?: string; children?: React.ReactNode;
 }) {
+  const { isDark } = useTheme();
   return (
     <div className="flex gap-4">
       <div className="flex flex-col items-center">
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: iconBg, color: iconColor }}>
+        <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isDark ? 'border' : ''}`} style={{ backgroundColor: isDark ? iconColor + '30' : iconBg, color: iconColor, borderColor: isDark ? iconColor + '50' : 'transparent' }}>
           <Icon size={15} />
         </div>
-        <div className="flex-1 w-px bg-slate-100 mt-2 mb-0" />
+        <div className={`flex-1 w-px mt-2 mb-0 ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`} />
       </div>
       <div className="pb-6 flex-1 min-w-0">
-        <p className="font-semibold text-slate-900 text-sm leading-snug">{title}</p>
+        <p className={`font-semibold text-sm leading-snug ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>{title}</p>
         {subtitle && <p className="text-xs font-semibold mt-0.5" style={{ color: iconColor }}>{subtitle}</p>}
-        {meta && <p className="text-xs text-slate-400 mt-0.5">{meta}</p>}
+        {meta && <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{meta}</p>}
         {children && <div className="mt-3">{children}</div>}
       </div>
     </div>
@@ -163,19 +176,23 @@ function CardGrid({ children }: { children: React.ReactNode }) {
 function InfoCard({ title, meta, description, href }: {
   title: string; meta?: string; description?: string; href?: string;
 }) {
+  const { isDark } = useTheme();
   return (
-    <div className="bg-slate-50 rounded-xl border border-slate-100 p-4 space-y-1.5">
+    <div className={`rounded-xl border p-4 space-y-1.5 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-100'}`}>
       <div className="flex items-start justify-between gap-3">
-        <p className="text-sm font-semibold text-slate-900 leading-snug">{title}</p>
+        <p className={`text-sm font-semibold leading-snug ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>{title}</p>
         {href && (
-          <a href={href} target="_blank" rel="noreferrer"
-            className="shrink-0 w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-blue-600 hover:border-blue-200 transition-colors">
+          <a href={formatExternalUrl(href)} target="_blank" rel="noreferrer"
+            className={`shrink-0 w-7 h-7 rounded-lg border flex items-center justify-center transition-colors ${
+              isDark ? 'bg-slate-900 border-slate-700 text-slate-400 hover:text-blue-400 hover:border-blue-900/50 hover:bg-blue-900/30' 
+                     : 'bg-white border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-200'
+            }`}>
             <ExternalLink size={12} />
           </a>
         )}
       </div>
-      {meta && <p className="text-xs text-slate-400 font-medium">{meta}</p>}
-      {description && <p className="text-xs text-slate-600 leading-relaxed">{description}</p>}
+      {meta && <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{meta}</p>}
+      {description && <p className={`text-xs leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{description}</p>}
     </div>
   );
 }
@@ -203,16 +220,17 @@ export default function CandidateProfilePage() {
   const [data, setData] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('');
+  const { isDark } = useTheme();
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const user = auth.currentUser;
         if (!user) return;
-        const token = await user.getIdToken();
-        const res = await axios.get(`http://localhost:5167/api/JobDetails/applicant-profile/${appId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        
+        // Token and Base URL are handled automatically by apiClient
+        const res = await apiClient.get(`/api/JobDetails/applicant-profile/${appId}`);
+        
         setData(normalizeProfile(res.data?.data ?? res.data));
       } catch (e) {
         console.error('Failed to load full profile', e);
@@ -251,8 +269,8 @@ export default function CandidateProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50">
-        <header className="bg-white border-b border-slate-100 sticky top-0 z-40 h-14" />
+      <div className={`min-h-screen ${isDark ? 'bg-slate-950' : 'bg-slate-50'}`}>
+        <header className={`border-b sticky top-0 z-40 h-14 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`} />
         <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5">
           {/* Hero Banner Skeleton */}
           <div className="bg-slate-800 rounded-2xl p-5 sm:p-6">
@@ -276,20 +294,20 @@ export default function CandidateProfilePage() {
           </div>
           
           {/* Main Content Skeleton */}
-          <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-            <div className="flex gap-1 p-2 border-b border-slate-100 bg-slate-50/50">
-              <div className="h-8 bg-slate-200 rounded-xl animate-pulse w-24"></div>
-              <div className="h-8 bg-slate-200 rounded-xl animate-pulse w-24"></div>
-              <div className="h-8 bg-slate-200 rounded-xl animate-pulse w-24"></div>
+          <div className={`rounded-2xl border overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
+            <div className={`flex gap-1 p-2 border-b ${isDark ? 'border-slate-800 bg-slate-900/50' : 'border-slate-100 bg-slate-50/50'}`}>
+              <div className={`h-8 rounded-xl animate-pulse w-24 ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`}></div>
+              <div className={`h-8 rounded-xl animate-pulse w-24 ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`}></div>
+              <div className={`h-8 rounded-xl animate-pulse w-24 ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`}></div>
             </div>
             <div className="p-5 sm:p-6 space-y-6">
               {[1, 2].map(i => (
                 <div key={i} className="flex gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-slate-100 animate-pulse shrink-0"></div>
+                  <div className={`w-10 h-10 rounded-xl animate-pulse shrink-0 ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}></div>
                   <div className="space-y-2.5 flex-1 pt-1">
-                    <div className="h-4 bg-slate-200 rounded animate-pulse w-1/3"></div>
-                    <div className="h-3 bg-slate-100 rounded animate-pulse w-1/4"></div>
-                    <div className="h-2.5 bg-slate-50 rounded animate-pulse w-1/5 mt-1"></div>
+                    <div className={`h-4 rounded animate-pulse w-1/3 ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`}></div>
+                    <div className={`h-3 rounded animate-pulse w-1/4 ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}></div>
+                    <div className={`h-2.5 rounded animate-pulse w-1/5 mt-1 ${isDark ? 'bg-slate-800' : 'bg-slate-50'}`}></div>
                   </div>
                 </div>
               ))}
@@ -302,11 +320,11 @@ export default function CandidateProfilePage() {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4">
-        <p className="text-base font-bold text-slate-800">Profile not found</p>
+      <div className={`min-h-screen flex flex-col items-center justify-center gap-4 ${isDark ? 'bg-slate-950' : 'bg-slate-50'}`}>
+        <p className={`text-base font-bold ${isDark ? 'text-slate-300' : 'text-slate-800'}`}>Profile not found</p>
         <button type="button"
           onClick={() => router.back()}
-          className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+          className={`text-sm font-semibold transition-colors ${isDark ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'}`}
         >
           Go back
         </button>
@@ -317,25 +335,25 @@ export default function CandidateProfilePage() {
   const GENERIC_LIST_TABS = ['publications', 'certifications', 'awards', 'languages', 'memberships', 'volunteers'];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className={`min-h-screen ${isDark ? 'bg-slate-950' : 'bg-slate-50'}`}>
 
       {/* ── Top Bar ── */}
-      <header className="bg-white border-b border-slate-100 sticky top-0 z-40">
+      <header className={`border-b sticky top-0 z-40 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center gap-3">
           <div className="flex items-center gap-2 shrink-0">
-            <span className="text-sm font-semibold text-slate-900 hidden sm:block">Recruiter</span>
-            <ChevronRight size={14} className="text-slate-300 hidden sm:block" />
-            <button onClick={() => router.back()} className="text-sm font-semibold text-slate-400 hover:text-slate-700 transition-colors hidden sm:block">
+            <span className={`text-sm font-semibold hidden sm:block ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>Recruiter</span>
+            <ChevronRight size={14} className={`hidden sm:block ${isDark ? 'text-slate-600' : 'text-slate-300'}`} />
+            <button onClick={() => router.back()} className={`text-sm font-semibold transition-colors hidden sm:block ${isDark ? 'text-slate-400 hover:text-slate-200' : 'text-slate-400 hover:text-slate-700'}`}>
               Candidates
             </button>
-            <ChevronRight size={14} className="text-slate-300 hidden sm:block" />
-            <span className="text-sm font-semibold text-slate-900 truncate max-w-[180px] hidden sm:block">{data.fullName}</span>
+            <ChevronRight size={14} className={`hidden sm:block ${isDark ? 'text-slate-600' : 'text-slate-300'}`} />
+            <span className={`text-sm font-semibold truncate max-w-[180px] hidden sm:block ${isDark ? 'text-white' : 'text-slate-900'}`}>{data.fullName}</span>
           </div>
 
           <button
             aria-label="Go back"
             onClick={() => router.back()}
-            className="sm:hidden flex items-center gap-1.5 text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors"
+            className={`sm:hidden flex items-center gap-1.5 text-sm font-semibold transition-colors ${isDark ? 'text-slate-400 hover:text-slate-200' : 'text-slate-600 hover:text-slate-900'}`}
           >
             <ArrowLeft size={15} /> Back
           </button>
@@ -343,7 +361,9 @@ export default function CandidateProfilePage() {
           {data.cvUrl && (
             <a
               href={data.cvUrl} target="_blank" rel="noopener noreferrer"
-              className="ml-auto shrink-0 inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-3.5 py-2 rounded-xl transition-colors"
+              className={`ml-auto shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-xl transition-colors ${
+                isDark ? 'bg-slate-800 hover:bg-slate-700 text-white' : 'bg-slate-900 hover:bg-slate-800 text-white'
+              }`}
             >
               <Download size={13} /> CV
             </a>
@@ -354,7 +374,7 @@ export default function CandidateProfilePage() {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5">
 
         {/* ── Hero banner ── */}
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-5 sm:p-6">
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-5 sm:p-6 border border-slate-800">
           <div className="flex flex-col sm:flex-row gap-5">
 
             {/* Left: identity */}
@@ -382,7 +402,7 @@ export default function CandidateProfilePage() {
                 {/* Links */}
                 <div className="flex flex-wrap gap-2 mt-3">
                   {data.portfolioUrl && (
-                    <a href={data.portfolioUrl} target="_blank" rel="noopener noreferrer"
+                    <a href={formatExternalUrl(data.portfolioUrl)} target="_blank" rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-300 bg-emerald-900/30 border border-emerald-700/30 px-3 py-1.5 rounded-lg hover:bg-emerald-900/50 transition-colors">
                       <ExternalLink size={11} /> Portfolio
                     </a>
@@ -394,10 +414,13 @@ export default function CandidateProfilePage() {
                     </a>
                   )}
                   {asArray(data.socialLinks).map((link, i) => {
-                    const href = firstNonEmpty(link?.profileUrl, link?.url, link?.href);
-                    if (!href) return null;
+                    const rawHref = firstNonEmpty(link?.profileUrl, link?.url, link?.href);
+                    if (!rawHref) return null;
+                    
+                    const safeHref = formatExternalUrl(rawHref);
+                    
                     return (
-                      <a key={i} href={href} target="_blank" rel="noopener noreferrer"
+                      <a key={i} href={safeHref} target="_blank" rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-300 bg-blue-900/30 border border-blue-700/30 px-3 py-1.5 rounded-lg hover:bg-blue-900/50 transition-colors">
                         <Globe2 size={11} /> {getLinkLabel(link, i)}
                       </a>
@@ -433,19 +456,20 @@ export default function CandidateProfilePage() {
         </div>
 
         {/* ── Main content ── */}
-        <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+        <div className={`rounded-2xl border overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
 
           {/* Tab bar */}
-          <div className="flex gap-1 p-2 border-b border-slate-100 overflow-x-auto scrollbar-none bg-slate-50/50">
+          <div className={`flex gap-1 p-2 border-b overflow-x-auto scrollbar-none ${isDark ? 'border-slate-800 bg-slate-900/50' : 'border-slate-100 bg-slate-50/50'}`}>
             {sections.map(tab => {
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className={`flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl transition-all whitespace-nowrap ${activeTab === tab.key
-                      ? 'bg-white text-blue-600 shadow-sm border border-slate-100'
-                      : 'text-slate-500 hover:text-slate-800 hover:bg-white/60'
+                  className={`flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl transition-all whitespace-nowrap ${
+                    activeTab === tab.key
+                      ? (isDark ? 'bg-slate-800 text-white shadow-sm border border-slate-700' : 'bg-white text-blue-600 shadow-sm border border-slate-100')
+                      : (isDark ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60' : 'text-slate-500 hover:text-slate-800 hover:bg-white/60')
                     }`}
                 >
                   <Icon size={12} /> {tab.label}
@@ -462,7 +486,7 @@ export default function CandidateProfilePage() {
               <div className="space-y-0">
                 {data.experience?.map((exp: any, i: number) => (
                   <TimelineItem
-                    key={i} icon={Briefcase} iconBg="#eff6ff" iconColor="#2563eb"
+                    key={i} icon={Briefcase} iconBg="#eff6ff" iconColor={isDark ? '#60a5fa' : '#2563eb'}
                     title={exp.roleDescription}
                     subtitle={exp.companyName}
                     meta={`${formatMonthYear(exp.startDate)} – ${formatMonthYear(exp.endDate)}`}
@@ -476,16 +500,16 @@ export default function CandidateProfilePage() {
               <div className="space-y-0">
                 {data.education?.map((edu: any, i: number) => (
                   <TimelineItem
-                    key={i} icon={GraduationCap} iconBg="#f5f3ff" iconColor="#7c3aed"
+                    key={i} icon={GraduationCap} iconBg="#f5f3ff" iconColor={isDark ? '#a78bfa' : '#7c3aed'}
                     title={`${edu.degreeTitle}${edu.fieldOfStudy ? ` · ${edu.fieldOfStudy}` : ''}`}
                     subtitle={edu.organization}
                     meta={`${formatMonthYear(edu.startDate)} – ${formatMonthYear(edu.endDate)}`}
                   >
                     {(edu.honors || edu.thesisTitle || edu.relevantCoursework) && (
-                      <div className="bg-slate-50 rounded-xl border border-slate-100 p-4 text-xs space-y-1.5 text-slate-600">
-                        {edu.honors && <p><span className="font-semibold text-slate-700">Honors:</span> {edu.honors}</p>}
-                        {edu.thesisTitle && <p><span className="font-semibold text-slate-700">Thesis:</span> {edu.thesisTitle}</p>}
-                        {edu.relevantCoursework && <p><span className="font-semibold text-slate-700">Coursework:</span> {edu.relevantCoursework}</p>}
+                      <div className={`rounded-xl border p-4 text-xs space-y-1.5 ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-50 border-slate-100 text-slate-600'}`}>
+                        {edu.honors && <p><span className={`font-semibold ${isDark ? 'text-slate-400' : 'text-slate-700'}`}>Honors:</span> {edu.honors}</p>}
+                        {edu.thesisTitle && <p><span className={`font-semibold ${isDark ? 'text-slate-400' : 'text-slate-700'}`}>Thesis:</span> {edu.thesisTitle}</p>}
+                        {edu.relevantCoursework && <p><span className={`font-semibold ${isDark ? 'text-slate-400' : 'text-slate-700'}`}>Coursework:</span> {edu.relevantCoursework}</p>}
                       </div>
                     )}
                   </TimelineItem>
@@ -500,13 +524,15 @@ export default function CandidateProfilePage() {
                   const level = getSkillLevel(skill);
                   const name = getSkillName(skill, i);
                   const levelStyle =
-                    level === 'Expert' ? { bg: '#f0fdf4', color: '#15803d', tag: '#dcfce7', tagColor: '#166534' } :
-                      level === 'Intermediate' ? { bg: '#eff6ff', color: '#1d4ed8', tag: '#dbeafe', tagColor: '#1e40af' } :
-                        { bg: '#f8fafc', color: '#475569', tag: '#e2e8f0', tagColor: '#475569' };
+                    level === 'Expert' ? 
+                      (isDark ? { bg: '#064e3b30', color: '#34d399', tag: '#064e3b50', tagColor: '#34d399', border: '#064e3b80' } : { bg: '#f0fdf4', color: '#15803d', tag: '#dcfce7', tagColor: '#166534', border: '#dcfce7' }) :
+                    level === 'Intermediate' ? 
+                      (isDark ? { bg: '#1e3a8a30', color: '#60a5fa', tag: '#1e3a8a50', tagColor: '#60a5fa', border: '#1e3a8a80' } : { bg: '#eff6ff', color: '#1d4ed8', tag: '#dbeafe', tagColor: '#1e40af', border: '#dbeafe' }) :
+                      (isDark ? { bg: '#1e293b30', color: '#94a3b8', tag: '#1e293b50', tagColor: '#94a3b8', border: '#1e293b80' } : { bg: '#f8fafc', color: '#475569', tag: '#e2e8f0', tagColor: '#475569', border: '#e2e8f0' });
                   return (
                     <div key={i} className="flex items-center justify-between p-3.5 rounded-xl border"
-                      style={{ backgroundColor: levelStyle.bg, borderColor: levelStyle.tag }}>
-                      <span className="text-sm font-semibold text-slate-800 leading-snug">{name}</span>
+                      style={{ backgroundColor: levelStyle.bg, borderColor: levelStyle.border }}>
+                      <span className={`text-sm font-semibold leading-snug`} style={{ color: isDark ? levelStyle.color : '#1e293b' }}>{name}</span>
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-md ml-2 shrink-0"
                         style={{ backgroundColor: levelStyle.tag, color: levelStyle.tagColor }}>
                         {level}
@@ -566,7 +592,7 @@ export default function CandidateProfilePage() {
                 {data.personalStatement && (
                   <div>
                     <SectionLabel>Personal statement</SectionLabel>
-                    <p className="text-sm text-slate-700 leading-relaxed bg-slate-50 rounded-xl border border-slate-100 p-5">
+                    <p className={`text-sm leading-relaxed rounded-xl border p-5 ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-50 border-slate-100 text-slate-700'}`}>
                       {data.personalStatement}
                     </p>
                   </div>
@@ -574,7 +600,7 @@ export default function CandidateProfilePage() {
                 {data.aboutMe && (
                   <div>
                     <SectionLabel>About me</SectionLabel>
-                    <p className="text-sm text-slate-700 leading-relaxed bg-slate-50 rounded-xl border border-slate-100 p-5">
+                    <p className={`text-sm leading-relaxed rounded-xl border p-5 ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-50 border-slate-100 text-slate-700'}`}>
                       {data.aboutMe}
                     </p>
                   </div>
@@ -610,7 +636,7 @@ export default function CandidateProfilePage() {
         </div>
 
         {/* ── AI score note ── */}
-        <p className="text-center text-xs text-slate-400 font-medium pb-4">
+        <p className={`text-center text-xs font-medium pb-4 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
           Scores are calculated from the frozen snapshot at the exact time of application.
         </p>
 

@@ -30,42 +30,65 @@ export default function LoginPage() {
   };
 
   const routeUserBasedOnRole = async (uid: string) => {
+    console.log(`[DEBUG] Starting routeUserBasedOnRole for UID: ${uid}`);
+
     try {
+      console.log(`[DEBUG] Fetching document from 'users' collection...`);
       let userDocRef = doc(db, "users", uid);
       let userDocSnap = await getDoc(userDocRef);
       
       // Fallback for uppercase table name
       if (!userDocSnap.exists()) {
+        console.log(`[DEBUG] Document not found in 'users'. Trying fallback 'Users' collection...`);
         userDocRef = doc(db, "Users", uid);
         userDocSnap = await getDoc(userDocRef);
+      } else {
+        console.log(`[DEBUG] Document found in 'users' collection.`);
       }
       
       // 🔥 THE FIX: If the document exists but 'role' is empty, safely default to "candidate"
       let role = "candidate"; 
-      if (userDocSnap.exists() && userDocSnap.data().role) {
-        // Convert to lowercase so "Company", "COMPANY", and "company" all work perfectly
-        role = userDocSnap.data().role.toLowerCase().trim();
+      if (userDocSnap.exists()) {
+        console.log(`[DEBUG] Raw document data:`, userDocSnap.data());
+        if (userDocSnap.data().role) {
+          // Convert to lowercase so "Company", "COMPANY", and "company" all work perfectly
+          role = userDocSnap.data().role.toLowerCase().trim();
+          console.log(`[DEBUG] Extracted role: ${role}`);
+        } else {
+          console.log(`[DEBUG] 'role' field is missing in document. Defaulting to 'candidate'.`);
+        }
+      } else {
+        console.log(`[DEBUG] Document NOT found in both collections. Defaulting to 'candidate'.`);
       }
 
       // 1. Ensure the auth token is refreshed and saved
+      console.log(`[DEBUG] Getting fresh auth token...`);
       const token = await auth.currentUser?.getIdToken(true); 
       if (token) {
+        console.log(`[DEBUG] Token retrieved successfully. Setting cvnet_token cookie.`);
         document.cookie = `cvnet_token=${token}; path=/; max-age=604800`; 
+      } else {
+        console.log(`[DEBUG] WARNING: Failed to retrieve auth token!`);
       }
 
       // 2. Save the SAFE role to the cookie
+      console.log(`[DEBUG] Setting cvnet_role cookie to: ${role}`);
       document.cookie = `cvnet_role=${role}; path=/; max-age=604800`;
 
       // 3. Route the user accurately
+      console.log(`[DEBUG] Routing user based on role: ${role}`);
       if (role === "admin") {
+        console.log(`[DEBUG] Redirecting to /admin/users`);
         window.location.href = "/admin/users"; 
       } else if (role === "company" || role === "recruiter") {
+        console.log(`[DEBUG] Redirecting to /recruiter/dashboard`);
         window.location.href = "/recruiter/dashboard"; 
       } else {
+        console.log(`[DEBUG] Redirecting to /applications`);
         window.location.href = "/applications"; 
       }
     } catch (error) {
-      console.error("Failed to fetch role, defaulting to candidate:", error);
+      console.error("[DEBUG] Failed to fetch role, defaulting to candidate:", error);
       document.cookie = `cvnet_role=candidate; path=/; max-age=604800`;
       window.location.href = "/dashboard"; 
     }
@@ -75,17 +98,23 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     setErrorMessage(null);
+    console.log(`[DEBUG] handleLogin initiated for email: ${email}`);
 
     try {
+      console.log(`[DEBUG] Calling authService.login...`);
       await authService.login(email, password);
+      console.log(`[DEBUG] authService.login successful.`);
       
       // ✅ FIX: Rely directly on Firebase's global auth state
       if (auth.currentUser) {
+        console.log(`[DEBUG] auth.currentUser exists with UID: ${auth.currentUser.uid}. Calling routeUserBasedOnRole...`);
         await routeUserBasedOnRole(auth.currentUser.uid);
       } else {
+         console.log(`[DEBUG] WARNING: auth.currentUser is null after login! Redirecting to /applications fallback.`);
          window.location.href = "/applications";
       }
     } catch (error: any) {
+      console.error(`[DEBUG] handleLogin Error:`, error);
       const rawMessage = error.response?.data?.error || error.message;
       setErrorMessage(getFriendlyMessage(rawMessage));
       setIsLoading(false);
@@ -95,17 +124,23 @@ export default function LoginPage() {
   const handleGoogleLogin = async () => {
     setIsLoading(true);
     setErrorMessage(null);
+    console.log(`[DEBUG] handleGoogleLogin initiated.`);
 
     try {
+      console.log(`[DEBUG] Calling authService.loginWithGoogle...`);
       await authService.loginWithGoogle();
+      console.log(`[DEBUG] authService.loginWithGoogle successful.`);
       
       // ✅ FIX: Rely directly on Firebase's global auth state
       if (auth.currentUser) {
+        console.log(`[DEBUG] auth.currentUser exists with UID: ${auth.currentUser.uid}. Calling routeUserBasedOnRole...`);
         await routeUserBasedOnRole(auth.currentUser.uid);
       } else {
+        console.log(`[DEBUG] WARNING: auth.currentUser is null after Google login! Redirecting to /applications fallback.`);
         window.location.href = "/applications";
       }
     } catch (error: any) {
+      console.error(`[DEBUG] handleGoogleLogin Error:`, error);
       const rawMessage = error.response?.data?.error || error.message;
       setErrorMessage(getFriendlyMessage(rawMessage || "Google Auth Failed"));
       setIsLoading(false);

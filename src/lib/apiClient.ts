@@ -2,7 +2,8 @@ import axios from "axios";
 import { auth } from "./firebaseConfig";
 
 const apiClient = axios.create({
-  baseURL: "http://localhost:5167/api",
+  // ✅ Dynamically reads from Vercel in production, or defaults to local C# backend
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5167",
 });
 
 apiClient.interceptors.request.use(async (config) => {

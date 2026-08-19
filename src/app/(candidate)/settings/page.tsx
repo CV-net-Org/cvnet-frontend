@@ -26,8 +26,11 @@ import {
   Lock,
   Globe
 } from "lucide-react";
+import apiClient from "@/lib/apiClient";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function SettingsPage() {
+  const { isDark } = useTheme();
   // Auth & Profile States - Cleaned up to use a single Full Name source of truth
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [fullName, setFullName] = useState("");
@@ -101,12 +104,9 @@ export default function SettingsPage() {
       }
 
       // 2. Transmit standard payload to .NET (Backend handles the NoSQL splitting)
-      const idToken = await currentUser.getIdToken();
-      await axios.put("http://localhost:5167/api/Profile/update-details", {
+      await apiClient.put("/api/Profile/update-details", {
         fullName: fullName,
         email: email
-      }, {
-        headers: { Authorization: `Bearer ${idToken}` }
       });
 
       setStatusMessage({ type: "success", text: "Profile base information updated successfully!" });
@@ -143,13 +143,7 @@ export default function SettingsPage() {
     multipartForm.append("file", file);
 
     try {
-      const idToken = await currentUser.getIdToken();
-      const response = await axios.post("http://localhost:5167/api/Profile/upload-image", multipartForm, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
+      const response = await apiClient.post("/api/Profile/upload-image", multipartForm);
 
       if (response.data.status === "success") {
         const structuralCloudinaryUrl = response.data.imageUrl;
@@ -218,11 +212,7 @@ export default function SettingsPage() {
 
     setIsLoading(true);
     try {
-      const idToken = await currentUser.getIdToken();
-
-      await axios.delete("http://localhost:5167/api/User/delete-account", {
-        headers: { Authorization: `Bearer ${idToken}` }
-      });
+      await apiClient.delete("/api/User/delete-account");
 
       await signOut(auth);
       window.location.href = "/login";
@@ -236,11 +226,11 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="p-6 sm:p-8 max-w-4xl">
+    <div className={`p-6 sm:p-8 max-w-4xl min-h-screen ${isDark ? 'bg-slate-950' : ''}`}>
       {/* Header Context Bar */}
       <div className="mb-8">
-        <h1 className="text-2xl font-extrabold text-slate-900">Account Settings</h1>
-        <p className="text-slate-500 text-sm mt-0.5">
+        <h1 className={`text-2xl font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>Account Settings</h1>
+        <p className={`text-sm mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
           Manage your account information, security settings, and communication preferences.
         </p>
       </div>
@@ -260,22 +250,22 @@ export default function SettingsPage() {
       )}
 
       {/* Dynamic User Summary Badge Context */}
-      <div className="flex items-center gap-4 p-4 bg-white border border-slate-100 rounded-2xl shadow-sm mb-6">
+      <div className={`flex items-center gap-4 p-4 rounded-2xl shadow-sm mb-6 border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
         {profileImageUrl ? (
-          <img src={profileImageUrl} alt="Avatar" className="w-12 h-12 rounded-full object-cover flex-shrink-0 border border-slate-200" />
+          <img src={profileImageUrl} alt="Avatar" className={`w-12 h-12 rounded-full object-cover flex-shrink-0 border ${isDark ? 'border-slate-700' : 'border-slate-200'}`} />
         ) : (
-          <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+          <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0 ${isDark ? 'bg-blue-900/50 text-blue-400' : 'bg-blue-600'}`}>
             {getInitials(fullName)}
           </div>
         )}
         <div>
-          <p className="font-bold text-slate-900">{fullName || "CVNet User"}</p>
-          <p className="text-xs text-slate-400">Candidate Account</p>
+          <p className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{fullName || "CVNet User"}</p>
+          <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Candidate Account</p>
         </div>
       </div>
 
       {/* Component Core Segment Tab Navigation Controllers */}
-      <div className="flex gap-1 mb-6 bg-slate-100 p-1 rounded-xl w-fit flex-wrap">
+      <div className={`flex gap-1 mb-6 p-1 rounded-xl w-fit flex-wrap ${isDark ? 'bg-slate-900' : 'bg-slate-100'}`}>
         {[
           { key: "profile", label: "Profile Information" },
           { key: "security", label: "Security Gateway" },
@@ -286,7 +276,7 @@ export default function SettingsPage() {
             type="button"
             onClick={() => setActiveTab(key as any)}
             className={`px-4 py-1.5 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap ${
-              activeTab === key ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
+              activeTab === key ? (isDark ? "bg-slate-800 text-white shadow-sm" : "bg-white text-slate-900 shadow-sm") : (isDark ? "text-slate-500 hover:text-slate-300" : "text-slate-500 hover:text-slate-700")
             }`}
           >
             {label}
@@ -297,33 +287,33 @@ export default function SettingsPage() {
       <div className="space-y-6">
         {/* TAB LAYER 1: Core Profile Handling Form */}
         {activeTab === "profile" && (
-          <form onSubmit={handleSaveProfile} className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
+          <form onSubmit={handleSaveProfile} className={`border rounded-2xl p-6 shadow-sm ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
             <div className="flex items-center gap-2 mb-5">
-              <Camera size={18} className="text-blue-600" />
-              <h2 className="font-bold text-slate-900">Profile Information</h2>
+              <Camera size={18} className={isDark ? 'text-blue-400' : 'text-blue-600'} />
+              <h2 className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Profile Information</h2>
             </div>
-            <p className="text-sm text-slate-400 mb-5">Update your personal details and how others see you.</p>
+            <p className={`text-sm mb-5 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>Update your personal details and how others see you.</p>
 
             {/* Profile Avatar Binary Pipeline Trigger Component */}
-            <div className="flex items-center gap-5 mb-6 pb-6 border-b border-slate-100">
+            <div className={`flex items-center gap-5 mb-6 pb-6 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
               <div className="relative">
                 {profileImageUrl ? (
-                  <img src={profileImageUrl} alt="Avatar" className="w-20 h-20 rounded-full object-cover border" />
+                  <img src={profileImageUrl} alt="Avatar" className={`w-20 h-20 rounded-full object-cover border ${isDark ? 'border-slate-700' : 'border-slate-200'}`} />
                 ) : (
-                  <div className="w-20 h-20 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-2xl">
+                  <div className={`w-20 h-20 rounded-full flex items-center justify-center font-bold text-2xl ${isDark ? 'bg-blue-900/50 text-blue-400' : 'bg-blue-600 text-white'}`}>
                     {getInitials(fullName)}
                   </div>
                 )}
-                <label className="absolute -bottom-1 -right-1 w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center shadow-md border-2 border-white hover:bg-blue-700 transition-colors cursor-pointer">
+                <label className={`absolute -bottom-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center shadow-md border-2 transition-colors cursor-pointer ${isDark ? 'bg-blue-600 border-slate-900 hover:bg-blue-500' : 'bg-blue-600 border-white hover:bg-blue-700'}`}>
                   <Camera size={13} className="text-white" />
                   <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={isLoading} />
                 </label>
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-700 mb-1">Profile Picture</p>
-                <p className="text-xs text-slate-400 mb-3">JPG, GIF or PNG. Recommended size 400x400px.</p>
+                <p className={`text-sm font-semibold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Profile Picture</p>
+                <p className={`text-xs mb-3 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>JPG, GIF or PNG. Recommended size 400x400px.</p>
                 <div className="flex gap-2">
-                  <label className="px-3 py-1.5 text-xs font-semibold bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors border border-blue-200 cursor-pointer">
+                  <label className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors border cursor-pointer ${isDark ? 'bg-blue-900/30 text-blue-400 border-blue-900/50 hover:bg-blue-900/50' : 'bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100'}`}>
                     Upload New
                     <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={isLoading} />
                   </label>
@@ -334,24 +324,24 @@ export default function SettingsPage() {
             {/* Restored to a Professional Single Full Name Input */}
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Full Name</label>
+                <label className={`block text-sm font-semibold mb-1.5 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Full Name</label>
                 <input
                   type="text"
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-4 py-3 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                  className={`w-full px-4 py-3 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${isDark ? 'bg-slate-900 border-slate-700 text-white focus:bg-slate-800' : 'bg-slate-50 border-slate-200 focus:bg-white'}`}
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Email Address</label>
+                <label className={`block text-sm font-semibold mb-1.5 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Email Address</label>
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                  className={`w-full px-4 py-3 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${isDark ? 'bg-slate-900 border-slate-700 text-white focus:bg-slate-800' : 'bg-slate-50 border-slate-200 focus:bg-white'}`}
                 />
               </div>
             </div>
@@ -368,20 +358,20 @@ export default function SettingsPage() {
 
         {/* TAB LAYER 2: Advanced Identity Security Gateway */}
         {activeTab === "security" && (
-          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
+          <div className={`border rounded-2xl p-6 shadow-sm ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
             <div className="flex items-center gap-2 mb-5">
-              <Shield size={18} className="text-blue-600" />
-              <h2 className="font-bold text-slate-900">Security</h2>
+              <Shield size={18} className={isDark ? 'text-blue-400' : 'text-blue-600'} />
+              <h2 className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Security</h2>
             </div>
-            <p className="text-sm text-slate-400 mb-5">Secure your account with a strong password.</p>
+            <p className={`text-sm mb-5 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>Secure your account with a strong password.</p>
 
             {isEmailUser ? (
               <form onSubmit={handleUpdatePassword}>
-                <h3 className="text-sm font-bold text-slate-800 mb-4">Change Password</h3>
+                <h3 className={`text-sm font-bold mb-4 ${isDark ? 'text-slate-300' : 'text-slate-800'}`}>Change Password</h3>
                 <div className="space-y-3 mb-5">
                   
                   <div>
-                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                    <label className={`block text-xs font-semibold uppercase tracking-wider mb-1.5 ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
                       Current Password
                     </label>
                     <div className="relative">
@@ -391,12 +381,12 @@ export default function SettingsPage() {
                         required
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
-                        className="w-full px-4 pr-12 py-3 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                        className={`w-full px-4 pr-12 py-3 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${isDark ? 'bg-slate-900 border-slate-700 text-white focus:bg-slate-800' : 'bg-slate-50 border-slate-200 focus:bg-white'}`}
                       />
                       <button
                         type="button"
                         onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        className={`absolute right-3.5 top-1/2 -translate-y-1/2 transition-colors ${isDark ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-slate-600'}`}
                       >
                         {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                       </button>
@@ -404,7 +394,7 @@ export default function SettingsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                    <label className={`block text-xs font-semibold uppercase tracking-wider mb-1.5 ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
                       New Password
                     </label>
                     <div className="relative">
@@ -414,19 +404,19 @@ export default function SettingsPage() {
                         required
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
-                        className="w-full px-4 pr-12 py-3 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                        className={`w-full px-4 pr-12 py-3 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${isDark ? 'bg-slate-900 border-slate-700 text-white focus:bg-slate-800' : 'bg-slate-50 border-slate-200 focus:bg-white'}`}
                       />
                       <button
                         type="button"
                         onClick={() => setShowNewPassword(!showNewPassword)}
-                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        className={`absolute right-3.5 top-1/2 -translate-y-1/2 transition-colors ${isDark ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-slate-600'}`}
                       >
                         {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                       </button>
                     </div>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                    <label className={`block text-xs font-semibold uppercase tracking-wider mb-1.5 ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
                       Confirm New Password
                     </label>
                     <input
@@ -435,7 +425,7 @@ export default function SettingsPage() {
                       required
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="w-full px-4 py-3 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                      className={`w-full px-4 py-3 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${isDark ? 'bg-slate-900 border-slate-700 text-white focus:bg-slate-800' : 'bg-slate-50 border-slate-200 focus:bg-white'}`}
                     />
                   </div>
                 </div>
@@ -448,12 +438,12 @@ export default function SettingsPage() {
                 </button>
               </form>
             ) : (
-              <div className="flex flex-col items-center justify-center border border-dashed border-slate-200 bg-slate-50 rounded-2xl p-8 text-center max-w-xl mx-auto my-4">
-                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4">
+              <div className={`flex flex-col items-center justify-center border border-dashed rounded-2xl p-8 text-center max-w-xl mx-auto my-4 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${isDark ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>
                   <Globe size={24} />
                 </div>
-                <h4 className="font-bold text-slate-900 text-base mb-1">Single Sign-On (SSO) Account</h4>
-                <p className="text-sm text-slate-500 max-w-sm leading-relaxed">
+                <h4 className={`font-bold text-base mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>Single Sign-On (SSO) Account</h4>
+                <p className={`text-sm max-w-sm leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                   You are securely logged into CVNet using your **Google identity provider channel**. Internal password rotation is managed externally within your primary Google Account management dashboard.
                 </p>
               </div>
@@ -463,27 +453,27 @@ export default function SettingsPage() {
 
         {/* TAB LAYER 3: System Notifications & Alerts Shell */}
         {activeTab === "notifications" && (
-          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
+          <div className={`border rounded-2xl p-6 shadow-sm ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
             <div className="flex items-center gap-2 mb-5">
-              <Bell size={18} className="text-blue-600" />
-              <h2 className="font-bold text-slate-900">Notifications & Preferences</h2>
+              <Bell size={18} className={isDark ? 'text-blue-400' : 'text-blue-600'} />
+              <h2 className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Notifications & Preferences</h2>
             </div>
-            <p className="text-sm text-slate-400 mb-5">
+            <p className={`text-sm mb-5 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
               Choose how you want to be notified about job opportunities and application updates.
             </p>
-            <div className="border border-dashed border-slate-200 rounded-xl p-8 text-center text-slate-400 text-sm font-medium">
+            <div className={`border border-dashed rounded-xl p-8 text-center text-sm font-medium ${isDark ? 'border-slate-800 text-slate-500' : 'border-slate-200 text-slate-400'}`}>
               Notification synchronization configuration interface handles will hook into system sockets during next phase development cycles.
             </div>
           </div>
         )}
 
         {/* System Safety Border: Danger Zone */}
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-6">
+        <div className={`border rounded-2xl p-6 ${isDark ? 'bg-red-950/20 border-red-900/30' : 'bg-red-50 border-red-200'}`}>
           <div className="flex items-center gap-2 mb-3">
             <AlertTriangle size={18} className="text-red-600" />
-            <h2 className="font-bold text-red-800">Deactivate Account</h2>
+            <h2 className={`font-bold ${isDark ? 'text-red-500' : 'text-red-800'}`}>Deactivate Account</h2>
           </div>
-          <p className="text-sm text-red-600 mb-4">
+          <p className={`text-sm mb-4 ${isDark ? 'text-red-400/80' : 'text-red-600'}`}>
             Once you deactivate your account, your profile and application history will be hidden from recruiters.
           </p>
           

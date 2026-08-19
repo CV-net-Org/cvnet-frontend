@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "CVNet – AI-Powered Recruitment Intelligence",
   description: "CVNet empowers enterprises to bridge the gap between candidate potential and role requirements with AI-driven analytics. Hire smarter, faster, and without bias.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

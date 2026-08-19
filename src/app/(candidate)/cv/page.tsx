@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { auth } from "@/lib/firebaseConfig";
+import apiClient from "@/lib/apiClient"; // Adjust relative path as needed
+import { useTheme } from "@/context/ThemeContext";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -31,47 +33,54 @@ const toSnakeCase = (obj: any) => {
 // ─── Shared field primitives ──────────────────────────────────────────────────
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
+  const { isDark } = useTheme();
   return (
-    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+    <label className={`block text-[10px] font-bold uppercase tracking-wider mb-1.5 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
       {children}
     </label>
   );
 }
 
 function TextInput({ readOnly, ...props }: React.InputHTMLAttributes<HTMLInputElement>) {
+  const { isDark } = useTheme();
   return (
     <input
       readOnly={readOnly}
       {...props}
       className={`w-full px-3.5 py-2.5 text-sm border rounded-xl transition-all focus:outline-none ${readOnly
-          ? "bg-slate-50 border-slate-100 text-slate-400 cursor-not-allowed"
-          : "bg-white border-slate-200 text-slate-800 placeholder:text-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
+          ? (isDark ? "bg-slate-800 border-slate-700 text-slate-500 cursor-not-allowed" : "bg-slate-50 border-slate-100 text-slate-400 cursor-not-allowed")
+          : (isDark ? "bg-slate-900 border-slate-700 text-white placeholder:text-slate-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400" : "bg-white border-slate-200 text-slate-800 placeholder:text-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400")
         } ${props.className ?? ""}`}
     />
   );
 }
 
 function TextArea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  const { isDark } = useTheme();
   return (
     <textarea
       {...props}
-      className={`w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-xl bg-white text-slate-800 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all resize-none ${props.className ?? ""}`}
+      className={`w-full px-3.5 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all resize-none ${isDark ? 'bg-slate-900 border-slate-700 text-white placeholder:text-slate-600' : 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-300'} ${props.className ?? ""}`}
     />
   );
 }
 
 function SelectInput({ children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) {
+  const { isDark } = useTheme();
   return (
     <select
       {...props}
-      className={`w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-xl bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all cursor-pointer ${props.className ?? ""}`}
+      className={`w-full px-3.5 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all cursor-pointer ${isDark ? 'bg-slate-900 border-slate-700 text-slate-200' : 'bg-white border-slate-200 text-slate-700'} ${props.className ?? ""}`}
     >
       {children}
     </select>
   );
 }
 
-function Divider() { return <div className="h-px bg-slate-100" />; }
+function Divider() { 
+  const { isDark } = useTheme();
+  return <div className={`h-px ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`} />; 
+}
 
 // ─── Section card shell ───────────────────────────────────────────────────────
 
@@ -80,19 +89,20 @@ function SectionCard({
 }: {
   icon: React.ElementType; title: string; onAdd?: () => void; addLabel?: string; children: React.ReactNode;
 }) {
+  const { isDark } = useTheme();
   return (
-    <div className="bg-white rounded-2xl border border-slate-100">
-      <div className="flex items-center justify-between px-5 py-4 border-b border-slate-50">
+    <div className={`rounded-2xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
+      <div className={`flex items-center justify-between px-5 py-4 border-b ${isDark ? 'border-slate-800' : 'border-slate-50'}`}>
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
-            <Icon size={14} className="text-blue-600" />
+          <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${isDark ? 'bg-blue-900/30' : 'bg-blue-50'}`}>
+            <Icon size={14} className={isDark ? 'text-blue-400' : 'text-blue-600'} />
           </div>
-          <h3 className="text-sm font-bold text-slate-900">{title}</h3>
+          <h3 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{title}</h3>
         </div>
         {onAdd && (
           <button
             type="button" onClick={onAdd}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors"
+            className={`inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors ${isDark ? 'text-blue-400 hover:text-blue-300 bg-blue-900/20 hover:bg-blue-900/40' : 'text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100'}`}
           >
             <Plus size={12} /> {addLabel ?? "Add"}
           </button>
@@ -106,11 +116,12 @@ function SectionCard({
 // ─── Entry card (for array items) ────────────────────────────────────────────
 
 function EntryCard({ onRemove, children }: { onRemove: () => void; children: React.ReactNode }) {
+  const { isDark } = useTheme();
   return (
-    <div className="relative bg-slate-50 rounded-xl border border-slate-100 p-4">
+    <div className={`relative rounded-xl border p-4 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-100'}`}>
       <button
         type="button" onClick={onRemove}
-        className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-50 transition-colors"
+        className={`absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-lg transition-colors ${isDark ? 'text-slate-500 hover:text-red-400 hover:bg-red-900/20' : 'text-slate-300 hover:text-red-500 hover:bg-red-50'}`}
       >
         <Trash2 size={13} />
       </button>
@@ -122,11 +133,12 @@ function EntryCard({ onRemove, children }: { onRemove: () => void; children: Rea
 // ─── Inline entry (for simple single-line items) ──────────────────────────────
 
 function InlineEntry({ onRemove, children }: { onRemove: () => void; children: React.ReactNode }) {
+  const { isDark } = useTheme();
   return (
-    <div className="flex items-center bg-slate-50 border border-slate-100 rounded-xl pl-1 pr-3.5 py-1">
+    <div className={`flex items-center border rounded-xl pl-1 pr-3.5 py-1 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-100'}`}>
       <div className="flex-1 flex flex-col sm:flex-row sm:items-center min-w-0">{children}</div>
       <button type="button" onClick={onRemove}
-        className="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-50 transition-colors sm:border-l border-slate-200 ml-2">
+        className={`shrink-0 w-8 h-8 flex items-center justify-center rounded-lg transition-colors sm:border-l ml-2 ${isDark ? 'text-slate-500 hover:text-red-400 hover:bg-red-900/20 border-slate-700' : 'text-slate-300 hover:text-red-500 hover:bg-red-50 border-slate-200'}`}>
         <Trash2 size={14} />
       </button>
     </div>
@@ -136,8 +148,9 @@ function InlineEntry({ onRemove, children }: { onRemove: () => void; children: R
 // ─── Empty state ──────────────────────────────────────────────────────────────
 
 function EmptyState({ label }: { label: string }) {
+  const { isDark } = useTheme();
   return (
-    <p className="text-xs text-slate-400 italic py-2">{label}</p>
+    <p className={`text-xs italic py-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{label}</p>
   );
 }
 
@@ -146,6 +159,7 @@ function EmptyState({ label }: { label: string }) {
 function SaveControls({ isDirty, onSave, onDiscard, isSaving }: {
   isDirty: boolean; onSave: () => void; onDiscard: () => void; isSaving: boolean;
 }) {
+  const { isDark } = useTheme();
   if (!isDirty) return null;
   return (
     <>
@@ -160,7 +174,7 @@ function SaveControls({ isDirty, onSave, onDiscard, isSaving }: {
         </button>
         <button
           type="button" onClick={onDiscard} disabled={isSaving}
-          className="text-xs font-semibold text-slate-500 border border-slate-200 bg-white hover:bg-slate-50 px-4 py-2.5 rounded-xl transition-colors"
+          className={`text-xs font-semibold border px-4 py-2.5 rounded-xl transition-colors ${isDark ? 'text-slate-400 border-slate-700 bg-slate-800 hover:bg-slate-700' : 'text-slate-500 border-slate-200 bg-white hover:bg-slate-50'}`}
         >
           Discard
         </button>
@@ -172,24 +186,25 @@ function SaveControls({ isDirty, onSave, onDiscard, isSaving }: {
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
 function Skeleton() {
+  const { isDark } = useTheme();
   return (
     <div className="animate-pulse space-y-5">
       {/* Clone banner skeleton */}
-      <div className="bg-slate-200/40 rounded-2xl h-[76px]" />
+      <div className={`rounded-2xl h-[76px] ${isDark ? 'bg-slate-800' : 'bg-slate-200/40'}`} />
       <div className="grid lg:grid-cols-3 gap-5 lg:gap-6 items-start">
         {/* Left Form Area Skeleton */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex flex-wrap gap-1.5">
             {[1, 2, 3, 4, 5, 6, 7].map(i => (
-              <div key={i} className="h-8 w-24 bg-slate-200/50 rounded-xl" />
+              <div key={i} className={`h-8 w-24 rounded-xl ${isDark ? 'bg-slate-800' : 'bg-slate-200/50'}`} />
             ))}
           </div>
-          <div className="bg-white rounded-2xl border border-slate-100 h-[600px]" />
+          <div className={`rounded-2xl border h-[600px] ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`} />
         </div>
         {/* Right Sidebar Skeleton */}
         <div className="space-y-5">
-          <div className="bg-white rounded-2xl border border-slate-100 h-56" />
-          <div className="bg-white rounded-2xl border border-slate-100 h-56" />
+          <div className={`rounded-2xl border h-56 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`} />
+          <div className={`rounded-2xl border h-56 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`} />
         </div>
       </div>
     </div>
@@ -199,6 +214,7 @@ function Skeleton() {
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function CVPage() {
+  const { isDark } = useTheme();
   const [activeSection, setActiveSection] = useState<SectionName>("All");
   const [showMobileNav, setShowMobileNav] = useState(false);
 
@@ -227,7 +243,7 @@ export default function CVPage() {
     "Memberships": useRef<HTMLDivElement>(null), "Social Links": useRef<HTMLDivElement>(null),
   };
 
-  const API_BASE = "http://localhost:5167/api/UserProfile";
+  const PYTHON_API_URL = process.env.NEXT_PUBLIC_PYTHON_API_URL || "http://localhost:8000";
 
   // ── Fetch ──
 
@@ -235,10 +251,10 @@ export default function CVPage() {
     try {
       const user = auth.currentUser;
       if (!user) return;
-      const token = await user.getIdToken();
-      const res = await axios.get(`${API_BASE}/full-profile?userId=${user.uid}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      
+      // apiClient handles the token and the base URL
+      const res = await apiClient.get(`/api/UserProfile/full-profile?userId=${user.uid}`);
+      
       if (res.data) {
         setActiveProfileId(res.data.activeProfileId || "");
         setMasterProfileId(res.data.masterProfileId || "");
@@ -278,10 +294,7 @@ export default function CVPage() {
     setIsLoading(true);
     try {
       const user = auth.currentUser;
-      const token = await user?.getIdToken();
-      await axios.post(`${API_BASE}/switch-profile`, { userId: user?.uid, profileId: newId }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await apiClient.post(`/api/UserProfile/switch-profile`, { userId: user?.uid, profileId: newId });
       await fetchCVData();
     } catch (err) { console.error(err); }
   };
@@ -290,10 +303,7 @@ export default function CVPage() {
     if (!masterProfileId || !activeProfileId) return;
     setIsCloning(true);
     try {
-      const token = await auth.currentUser?.getIdToken();
-      await axios.post(`${API_BASE}/clone-profile`,
-        { MasterProfileId: masterProfileId, TargetProfileId: activeProfileId },
-        { headers: { Authorization: `Bearer ${token}` } });
+      await apiClient.post(`/api/UserProfile/clone-profile`, { MasterProfileId: masterProfileId, TargetProfileId: activeProfileId });
       await fetchCVData();
     } catch (err) { console.error("Clone failed:", err); }
     finally { setIsCloning(false); }
@@ -332,14 +342,17 @@ export default function CVPage() {
     try {
       const user = auth.currentUser;
       if (!user) return;
-      const token = await user.getIdToken();
+      
       const fields = ["fullName", "phone", "address", "gpa", "portfolioUrl", "currentOrg", "currentPosition", "personalStatement", "aboutMe"];
       const promises = [];
       for (const f of fields) {
         if (profile[f] !== initialProfile[f]) {
-          promises.push(axios.put(`${API_BASE}/profile-update`,
-            { userId: user.uid, profileId: activeProfileId, field: f, value: profile[f] },
-            { headers: { Authorization: `Bearer ${token}` } }));
+          promises.push(apiClient.put(`/api/UserProfile/profile-update`, { 
+            userId: user.uid, 
+            profileId: activeProfileId, 
+            field: f, 
+            value: profile[f] 
+          }));
         }
       }
       await Promise.all(promises);
@@ -369,15 +382,15 @@ export default function CVPage() {
     }
     for (const curr of currItems) { if (String(curr.id).startsWith("temp-")) toAdd.push(curr); }
     try {
-      const token = await auth.currentUser?.getIdToken();
       for (const id of toDeleteIds) {
-        await axios.delete(`${API_BASE}/collection/${tableName}/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+        await apiClient.delete(`/api/UserProfile/collection/${tableName}/${id}`);
       }
       for (const item of toAdd) {
         const { id, profileId, profile_id, created_at, updated_at, ...rest } = item;
-        await axios.post(`${API_BASE}/collection/${tableName}`,
-          { profileId: activeProfileId, ...toSnakeCase(rest) },
-          { headers: { Authorization: `Bearer ${token}` } });
+        await apiClient.post(`/api/UserProfile/collection/${tableName}`, { 
+          profileId: activeProfileId, 
+          ...toSnakeCase(rest) 
+        });
       }
       await fetchCVData();
     } catch (err: any) {
@@ -393,11 +406,16 @@ export default function CVPage() {
     const fd = new FormData(); fd.append("file", file);
     try {
       const user = auth.currentUser;
-      const token = await user?.getIdToken();
-      const uploadRes = await axios.post("http://localhost:5167/api/CV/upload-cloudinary", fd, {
-        headers: { Authorization: `Bearer ${token}` },
+      
+      // 1. Upload using apiClient (handles token automatically)
+      const uploadRes = await apiClient.post("/api/CV/upload-cloudinary", fd);
+      
+      // 2. Process via Python using standard axios and your environment variable
+      await axios.post(`${PYTHON_API_URL}/process-pdf`, { 
+        userId: user?.uid, 
+        cvUrl: uploadRes.data.url 
       });
-      await axios.post("http://localhost:8000/process-pdf", { userId: user?.uid, cvUrl: uploadRes.data.url });
+      
       await fetchCVData();
     } catch (err) { console.error(err); }
     finally { setIsUploading(false); }
@@ -412,7 +430,11 @@ export default function CVPage() {
       const fd = new FormData();
       fd.append("user_id", user?.uid || "");
       fd.append("profile_url", linkedInUrl);
-      await axios.post("http://localhost:8000/sync-linkedin", fd, { headers: { "Content-Type": "multipart/form-data" } });
+      
+      await axios.post(`${PYTHON_API_URL}/sync-linkedin`, fd, { 
+        headers: { "Content-Type": "multipart/form-data" } 
+      });
+      
       await fetchCVData();
       setLinkedInUrl("");
     } catch (err) { console.error(err); }
@@ -433,15 +455,15 @@ export default function CVPage() {
   // ── Render ────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className={`min-h-screen ${isDark ? 'bg-slate-950' : 'bg-slate-50'}`}>
 
       {/* ── Top bar ── */}
-      <header className="bg-white border-b border-slate-100 sticky top-0 z-40">
+      <header className={`sticky top-0 z-40 border-b ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2 shrink-0">
-            <span className="text-sm font-semibold text-slate-900 hidden sm:block">CVNet</span>
-            <ChevronRight size={14} className="text-slate-300 hidden sm:block" />
-            <span className="text-sm font-semibold text-slate-400 hidden sm:block">CV Workspace</span>
+            <span className={`text-sm font-semibold hidden sm:block ${isDark ? 'text-white' : 'text-slate-900'}`}>CVNet</span>
+            <ChevronRight size={14} className={`hidden sm:block ${isDark ? 'text-slate-600' : 'text-slate-300'}`} />
+            <span className={`text-sm font-semibold hidden sm:block ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>CV Workspace</span>
           </div>
 
           {/* Track selector — top bar */}
@@ -449,7 +471,7 @@ export default function CVPage() {
             <select
               value={activeProfileId}
               onChange={handleProfileSwitch}
-              className="flex-1 px-3 py-2 text-xs font-semibold border border-slate-200 rounded-xl bg-white text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer"
+              className={`flex-1 px-3 py-2 text-xs font-semibold border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer ${isDark ? 'bg-slate-800 border-slate-700 text-blue-400' : 'bg-white border-slate-200 text-blue-700'}`}
             >
               <optgroup label="Master Profile">
                 {availableProfiles.filter(p => p.isMaster).map(p => (
@@ -470,21 +492,21 @@ export default function CVPage() {
 
         {/* ── Page heading ── */}
         <div className="mb-5">
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">CV Workspace</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Edit your master CV or customize a targeted role track.</p>
+          <h1 className={`text-xl sm:text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>CV Workspace</h1>
+          <p className={`text-sm mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Edit your master CV or customize a targeted role track.</p>
         </div>
 
         {isLoading ? <Skeleton /> : (
           <>
             {/* ── Clone from master banner ── */}
             {canCloneFromMaster && (
-          <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-5">
-            <div className="w-9 h-9 rounded-xl bg-blue-100 flex items-center justify-center shrink-0">
-              <Copy size={15} className="text-blue-600" />
+          <div className={`border rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-5 ${isDark ? 'bg-blue-900/10 border-blue-900/30' : 'bg-blue-50 border-blue-100'}`}>
+            <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isDark ? 'bg-blue-900/30' : 'bg-blue-100'}`}>
+              <Copy size={15} className={isDark ? 'text-blue-400' : 'text-blue-600'} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-blue-800">Sync from master CV</p>
-              <p className="text-xs text-blue-600 mt-0.5 leading-relaxed">
+              <p className={`text-sm font-bold ${isDark ? 'text-blue-400' : 'text-blue-800'}`}>Sync from master CV</p>
+              <p className={`text-xs mt-0.5 leading-relaxed ${isDark ? 'text-blue-400/70' : 'text-blue-600'}`}>
                 Pull missing data from your General Profile. Safely merges without overwriting existing entries.
               </p>
             </div>
@@ -508,18 +530,18 @@ export default function CVPage() {
               <button
                 type="button"
                 onClick={() => setShowMobileNav(v => !v)}
-                className="w-full flex items-center justify-between px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700"
+                className={`w-full flex items-center justify-between px-4 py-3 border rounded-xl text-sm font-semibold ${isDark ? 'bg-slate-900 border-slate-800 text-slate-300' : 'bg-white border-slate-200 text-slate-700'}`}
               >
                 <span>{activeSectionLabel}</span>
-                <ChevronDown size={15} className={`text-slate-400 transition-transform ${showMobileNav ? "rotate-180" : ""}`} />
+                <ChevronDown size={15} className={`transition-transform ${isDark ? 'text-slate-500' : 'text-slate-400'} ${showMobileNav ? "rotate-180" : ""}`} />
               </button>
               {showMobileNav && (
-                <div className="mt-1 bg-white border border-slate-100 rounded-2xl p-2 shadow-lg grid grid-cols-2 gap-1">
+                <div className={`mt-1 border rounded-2xl p-2 shadow-lg grid grid-cols-2 gap-1 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
                   {ALL_SECTIONS.map(s => (
                     <button
                       key={s} type="button"
                       onClick={() => { setActiveSection(s); setShowMobileNav(false); }}
-                      className={`px-3 py-2.5 text-xs font-semibold rounded-xl text-left transition-colors ${activeSection === s ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-slate-50"
+                      className={`px-3 py-2.5 text-xs font-semibold rounded-xl text-left transition-colors ${activeSection === s ? "bg-blue-600 text-white" : (isDark ? "text-slate-400 hover:bg-slate-800" : "text-slate-600 hover:bg-slate-50")
                         }`}
                     >
                       {s}
@@ -535,8 +557,8 @@ export default function CVPage() {
                 <button
                   key={s} type="button" onClick={() => setActiveSection(s)}
                   className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all ${activeSection === s
-                      ? "bg-slate-900 text-white border-slate-900"
-                      : "bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:text-slate-800"
+                      ? (isDark ? "bg-white text-slate-900 border-white" : "bg-slate-900 text-white border-slate-900")
+                      : (isDark ? "bg-slate-900 text-slate-400 border-slate-800 hover:border-slate-700 hover:text-slate-200" : "bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:text-slate-800")
                     }`}
                 >
                   {s}
@@ -836,16 +858,31 @@ export default function CVPage() {
             {/* ── 14. Social Links ── */}
             {showSection("Social Links") && (
               <div ref={sectionRefs["Social Links"]}>
-                <SectionCard icon={Link2} title="Social links" onAdd={() => addArrayItem("socialLinks", { platformName: "LinkedIn", profileUrl: "" })} addLabel="Add link">
+                <SectionCard icon={Link2} title="Social links" onAdd={() => addArrayItem("socialLinks", { platformName: "", profileUrl: "" })} addLabel="Add link">
                   {(!profile.socialLinks?.length) ? <EmptyState label="No social links added yet." /> : (
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {profile.socialLinks.map((soc: any, idx: number) => (
-                        <InlineEntry key={soc.id} onRemove={() => removeArrayItem("socialLinks", idx)}>
-                          <SelectInput value={soc.platformName || "LinkedIn"} onChange={e => handleArrayChange("socialLinks", idx, "platformName", e.target.value)} className="border-0 bg-transparent w-28 text-xs font-bold focus:ring-0 p-0 text-slate-700">
-                            <option>LinkedIn</option><option>GitHub</option><option>Twitter</option><option>Portfolio</option><option>Other</option>
-                          </SelectInput>
-                          <TextInput type="url" value={soc.profileUrl || ""} onChange={e => handleArrayChange("socialLinks", idx, "profileUrl", e.target.value)} placeholder="https://…" className="flex-1 border-0 border-l border-slate-200 pl-3 focus:ring-0 bg-transparent text-blue-600 text-xs" />
-                        </InlineEntry>
+                        <EntryCard key={soc.id} onRemove={() => removeArrayItem("socialLinks", idx)}>
+                          <div className="grid sm:grid-cols-2 gap-3">
+                            <div>
+                              <FieldLabel>Platform name</FieldLabel>
+                              <TextInput 
+                                value={soc.platformName || ""} 
+                                onChange={e => handleArrayChange("socialLinks", idx, "platformName", e.target.value)} 
+                                placeholder="e.g. LinkedIn, GitHub, Portfolio" 
+                              />
+                            </div>
+                            <div>
+                              <FieldLabel>Profile URL</FieldLabel>
+                              <TextInput 
+                                type="url" 
+                                value={soc.profileUrl || ""} 
+                                onChange={e => handleArrayChange("socialLinks", idx, "profileUrl", e.target.value)} 
+                                placeholder="https://..." 
+                              />
+                            </div>
+                          </div>
+                        </EntryCard>
                       ))}
                     </div>
                   )}
@@ -860,31 +897,31 @@ export default function CVPage() {
           <div className="space-y-4">
 
             {/* PDF upload */}
-            <div className="bg-white rounded-2xl border border-slate-100 p-5 space-y-4">
+            <div className={`rounded-2xl border p-5 space-y-4 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
               <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
-                  <FileText size={14} className="text-blue-600" />
+                <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${isDark ? 'bg-blue-900/30' : 'bg-blue-50'}`}>
+                  <FileText size={14} className={isDark ? 'text-blue-400' : 'text-blue-600'} />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-slate-900">Parse resume PDF</p>
-                  <p className="text-xs text-slate-400 mt-0.5">AI extracts structured data automatically.</p>
+                  <p className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Parse resume PDF</p>
+                  <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>AI extracts structured data automatically.</p>
                 </div>
               </div>
 
-              <label className="flex flex-col items-center gap-3 border-2 border-dashed border-slate-200 hover:border-blue-300 rounded-xl py-6 cursor-pointer transition-colors">
+              <label className={`flex flex-col items-center gap-3 border-2 border-dashed rounded-xl py-6 cursor-pointer transition-colors ${isDark ? 'border-slate-700 hover:border-blue-500/50' : 'border-slate-200 hover:border-blue-300'}`}>
                 {isUploading ? (
                   <div className="text-center py-1">
-                    <Loader2 className="animate-spin text-blue-600 mx-auto mb-2" size={22} />
-                    <p className="text-xs font-semibold text-slate-600">Processing…</p>
+                    <Loader2 className={`animate-spin mx-auto mb-2 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} size={22} />
+                    <p className={`text-xs font-semibold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>Processing…</p>
                   </div>
                 ) : (
                   <>
-                    <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-                      <Upload size={18} className="text-blue-600" />
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-blue-900/30' : 'bg-blue-50'}`}>
+                      <Upload size={18} className={isDark ? 'text-blue-400' : 'text-blue-600'} />
                     </div>
                     <div className="text-center">
-                      <p className="text-xs font-bold text-slate-700">Drop resume file</p>
-                      <p className="text-[10px] text-slate-400 mt-0.5">PDF or DOCX</p>
+                      <p className={`text-xs font-bold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Drop resume file</p>
+                      <p className={`text-[10px] mt-0.5 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>PDF or DOCX</p>
                     </div>
                   </>
                 )}
@@ -892,31 +929,31 @@ export default function CVPage() {
               </label>
 
               <div className="pt-1">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Current document</p>
+                <p className={`text-[10px] font-bold uppercase tracking-wider mb-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Current document</p>
                 {profile.cvUrl ? (
                   <a
                     href={profile.cvUrl} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full text-xs font-semibold text-blue-600 border border-blue-100 bg-blue-50 hover:bg-blue-100 py-2.5 rounded-xl transition-colors"
+                    className={`flex items-center justify-center gap-2 w-full text-xs font-semibold border py-2.5 rounded-xl transition-colors ${isDark ? 'text-blue-400 border-blue-900/50 bg-blue-900/20 hover:bg-blue-900/40' : 'text-blue-600 border-blue-100 bg-blue-50 hover:bg-blue-100'}`}
                   >
                     <Eye size={13} /> View uploaded PDF
                   </a>
                 ) : (
-                  <div className="text-center py-3 bg-slate-50 border border-dashed border-slate-200 rounded-xl">
-                    <p className="text-xs text-slate-400">No PDF uploaded yet.</p>
+                  <div className={`text-center py-3 border border-dashed rounded-xl ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+                    <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>No PDF uploaded yet.</p>
                   </div>
                 )}
               </div>
             </div>
 
             {/* LinkedIn sync */}
-            <div className="bg-white rounded-2xl border border-slate-100 p-5 space-y-4">
+            <div className={`rounded-2xl border p-5 space-y-4 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
               <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
-                  <Link2 size={14} className="text-indigo-600" />
+                <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${isDark ? 'bg-indigo-900/30' : 'bg-indigo-50'}`}>
+                  <Link2 size={14} className={isDark ? 'text-indigo-400' : 'text-indigo-600'} />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-slate-900">Sync LinkedIn</p>
-                  <p className="text-xs text-slate-400 mt-0.5">Extract missing data from your public profile.</p>
+                  <p className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Sync LinkedIn</p>
+                  <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Extract missing data from your public profile.</p>
                 </div>
               </div>
 
@@ -940,7 +977,7 @@ export default function CVPage() {
             </div>
 
             {/* Smart merge notice */}
-            <div className="bg-slate-900 rounded-2xl p-4">
+            <div className={`rounded-2xl p-4 ${isDark ? 'bg-slate-900 border border-slate-800' : 'bg-slate-900'}`}>
               <p className="text-[10px] font-bold text-amber-400 uppercase tracking-wider mb-1.5">Smart merge engine</p>
               <p className="text-xs text-slate-400 leading-relaxed">
                 These tools only fill <span className="text-slate-300 font-semibold">empty spaces</span> and append new entries — your existing data is never overwritten.

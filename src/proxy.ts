@@ -3,8 +3,8 @@ import type { NextRequest } from "next/server";
 
 export default function proxy(request: NextRequest) {
   const token = request.cookies.get("cvnet_token")?.value;
-  const rawRole = request.cookies.get("cvnet_role")?.value; 
-  
+  const rawRole = request.cookies.get("cvnet_role")?.value;
+
   // 🔥 FIX 1: Handle the literal string "undefined" or "null" safely
   let role = rawRole ? rawRole.toLowerCase().trim() : null;
   if (role === "undefined" || role === "null" || role === "") {
@@ -21,7 +21,7 @@ export default function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const publicRoutes = ["/login", "/signup", "/"];
+  const publicRoutes = ["/login", "/signup", "/", "/features", "/about", "/contact", "/privacy", "/terms"];
   const isPublicRoute = publicRoutes.includes(path);
 
   // 2. 🔥 FIX 2: THE KILL SWITCH FOR CORRUPT SESSIONS 🔥
@@ -49,7 +49,7 @@ export default function proxy(request: NextRequest) {
 
   // 5. STRICT "DEFAULT DENY" ROLE-BASED ACCESS CONTROL
   if (!isPublicRoute && token && role) {
-    
+
     // RULE A: Protect Admin Routes
     if (path.startsWith("/admin") && role !== "admin") {
       console.log("🚨 BLOCKED: Non-admin tried to access /admin");
